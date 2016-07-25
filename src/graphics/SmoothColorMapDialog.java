@@ -11,9 +11,14 @@ public class SmoothColorMapDialog extends ColorMapDialog {
 		double elevation = terrain.getElevation(); // number between -1 and 1 roughly
 		double percent = (elevation + 1) / 2;
 
+		switch (terrain.getLocationType()) {
+			case CITY:
+				return Color.pink;
+		}
+
 		switch (terrain.getTerrainType()) {
 			case WATER:
-				return averageColors(Color.blue, Color.cyan, percent);
+				return averageColors(Color.cyan, Color.blue, percent);
 			case RIVER:
 				return averageColors(Color.blue, Color.cyan, percent);
 			case BEACH:
@@ -25,7 +30,7 @@ public class SmoothColorMapDialog extends ColorMapDialog {
 			case MOUNTAIN:
 				return averageColors(new Color(87, 87, 87), new Color(150, 150, 150), percent);
 			default:
-				return averageColors(Color.green, Color.blue, percent);
+				return averageColors(new Color(179, 124, 21), new Color(140, 98, 18), percent);
 
 		}
 	}

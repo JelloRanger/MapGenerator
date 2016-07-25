@@ -18,6 +18,8 @@ public abstract class Map {
 
 	protected double mMountainGen;
 
+	protected double mHillGen;
+
 	protected double mBeachGen;
 
 	protected double mForestGen;

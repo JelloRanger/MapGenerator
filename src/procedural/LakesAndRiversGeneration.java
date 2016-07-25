@@ -10,11 +10,7 @@ public class LakesAndRiversGeneration {
 
     private PerlinMap map;
 
-    private Grid waterGrid;
-
-    private final int NUM_STARTING_POINTS = 10;
-
-    private final int QUADRANTS = 500;
+    private final int QUADRANTS = 200;
 
     private Stack<Point> riverStartingPoints = new Stack<>();
 
@@ -23,8 +19,6 @@ public class LakesAndRiversGeneration {
     }
 
     public void generate() {
-        waterGrid = new Grid(map.getWidth(), map.getHeight());
-        waterGrid.initializeGrid();
 
         PriorityQueue<Point> highestPoints = new PriorityQueue<>(new PointComparator());
 
@@ -56,7 +50,7 @@ public class LakesAndRiversGeneration {
             setRiver(currentPoint);
 
             while (true) {
-                adjacentPoints.addAll(map.getNoise().getGrid().getDirectlyAdjacentPoints(currentPoint));
+                adjacentPoints.addAll(map.getNoise().getGrid().getAdjacentPoints(currentPoint, 1));
                 if (isWater(adjacentPoints.peek())) {
                     adjacentPoints.clear();
                     break;

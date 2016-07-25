@@ -19,6 +19,8 @@ public class Main {
 
 	private final static double MOUNTAINGEN = 0.5;
 
+	private final static double HILLGEN = 0.4;
+
 	private final static double BEACHGEN = -0.0125;
 
 	private final static double FORESTGEN = 0.2;
@@ -39,7 +41,7 @@ public class Main {
 		//displaySmoothNoise(WIDTH, HEIGHT, 10);
 		//displayPerlinNoise(WIDTH, HEIGHT, randomSeed);
 		//displayPerlinMap(WIDTH, HEIGHT, randomSeed, LANDGEN, WATERGEN);
-		displayPerlinMapWithTexturing(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, BEACHGEN, FORESTGEN);
+		displayPerlinMapWithTexturing(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
 	}
 	
 	// DIALOGS
@@ -65,6 +67,7 @@ public class Main {
 										 double landGen,
 										 double waterGen,
 										 double mountainGen,
+										 double hillGen,
 										 double beachGen,
 										 double forestGen) {
 
@@ -75,6 +78,7 @@ public class Main {
 				landGen,
 				waterGen,
 				mountainGen,
+				hillGen,
 				beachGen,
 				forestGen);
 
@@ -90,6 +94,7 @@ public class Main {
 										 double landGen,
 										 double waterGen,
 										 double mountainGen,
+										 double hillGen,
 										 double beachGen,
 										 double forestGen) {
 
@@ -101,6 +106,7 @@ public class Main {
 				landGen,
 				waterGen,
 				mountainGen,
+				hillGen,
 				beachGen,
 				forestGen);
 
@@ -116,6 +122,7 @@ public class Main {
 												double landGen,
 												double waterGen,
 												double mountainGen,
+												double hillGen,
 												double beachGen,
 												double forestGen) {
 
@@ -126,6 +133,7 @@ public class Main {
 				landGen,
 				waterGen,
 				mountainGen,
+				hillGen,
 				beachGen,
 				forestGen);
 
@@ -141,6 +149,7 @@ public class Main {
 										 double landGen,
 										 double waterGen,
 										 double mountainGen,
+										 double hillGen,
 										 double beachGen,
 										 double forestGen) {
 
@@ -151,6 +160,7 @@ public class Main {
 				landGen,
 				waterGen,
 				mountainGen,
+				hillGen,
 				beachGen,
 				forestGen);
 
@@ -167,6 +177,7 @@ public class Main {
 													  double landGen,
 													  double waterGen,
 													  double mountainGen,
+													  double hillGen,
 													  double beachGen,
 													  double forestGen) {
 
@@ -177,6 +188,7 @@ public class Main {
 				landGen,
 				waterGen,
 				mountainGen,
+				hillGen,
 				beachGen,
 				forestGen);
 

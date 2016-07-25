@@ -1,9 +1,11 @@
 package map;
 
 import model.Grid;
+import model.LocationType;
 import model.Terrain;
 import model.TerrainType;
 import noise.PerlinNoise;
+import procedural.CityGeneration;
 import procedural.LakesAndRiversGeneration;
 
 public class PerlinMap extends RandomMap {
@@ -21,9 +23,10 @@ public class PerlinMap extends RandomMap {
                      double landGen,
                      double waterGen,
                      double mountainGen,
+                     double hillGen,
                      double beachGen,
                      double forestGen) {
-        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, beachGen, forestGen);
+        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
     }
 
     @Override
@@ -35,6 +38,14 @@ public class PerlinMap extends RandomMap {
         mForestNoise.initializeMapGrid();
 
         generateLakesAndRivers();
+
+        for (int y = 0; y < mHeight; y++) {
+            for (int x = 0; x < mWidth; x++) {
+                getTerrain(x, y).setLocationType(LocationType.EMPTY);
+            }
+        }
+
+        generateCities();
     }
 
     @Override
@@ -50,28 +61,18 @@ public class PerlinMap extends RandomMap {
             } else {
                 return determineTerrainTypeBasedOnElevation(terrain, terrain.getElevation());
             }
-        } /*else if (waterGrid != null && waterGrid.getPoint(x, y).getElevation() > 0) {
-            terrain.setTerrainType(TerrainType.RIVER);
-        }*/
+        }
 
         return terrain;
     }
 
-    public void generateLakesAndRivers() {
+    protected void generateLakesAndRivers() {
         LakesAndRiversGeneration lakesAndRiversGeneration = new LakesAndRiversGeneration(this);
         lakesAndRiversGeneration.generate();
     }
 
-    public void addLakesAndRivers(Grid waterGrid) {
-        this.waterGrid = waterGrid;
-
-        StringBuilder sb = new StringBuilder();
-        for (int y = 0; y < waterGrid.getHeight(); y++) {
-            for (int x = 0; x < waterGrid.getWidth(); x++) {
-                sb.append(waterGrid.getPoint(x, y).getElevation() + " ");
-            }
-            sb.append("\n");
-        }
-        System.out.print(sb.toString());
+    protected void generateCities() {
+        CityGeneration cityGeneration = new CityGeneration(this);
+        cityGeneration.generate();
     }
 }

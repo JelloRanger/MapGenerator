@@ -13,6 +13,7 @@ public class RandomMap extends Map {
                      double landGen,
                      double waterGen,
                      double mountainGen,
+					 double hillGen,
 					 double beachGen,
                      double forestGen) {
 
@@ -23,6 +24,7 @@ public class RandomMap extends Map {
 		mLandGen = landGen;
 		mWaterGen = waterGen;
 		mMountainGen = mountainGen;
+		mHillGen = hillGen;
 		mBeachGen = beachGen;
 		mForestGen = forestGen;
 	}
@@ -50,6 +52,8 @@ public class RandomMap extends Map {
 
 		if (elevation >= mMountainGen) {
 			terrainType = TerrainType.MOUNTAIN;
+		} else if (elevation >= mHillGen) {
+			terrainType = TerrainType.HILL;
 		} else if (elevation >= mLandGen) {
 			terrainType = TerrainType.LAND;
 		} else if (elevation >= mLandGen + mBeachGen) {
