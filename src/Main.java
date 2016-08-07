@@ -1,11 +1,10 @@
-import graphics.ColorMapDialog;
-import graphics.SmoothColorMapDialog;
-import graphics.BasicNoiseDialog;
+import view.ColorMapDialog;
+import view.SmoothColorMapDialog;
+import view.BasicNoiseDialog;
 import map.*;
-import noise.Noise;
-import noise.PerlinNoise;
-import noise.RandomNoise;
-import noise.SmoothNoise;
+import noise.*;
+
+import static javafx.application.Application.launch;
 
 public class Main {
 
@@ -13,7 +12,7 @@ public class Main {
 
 	private final static int HEIGHT = 1000;
 
-	private final static double LANDGEN = 0.1;
+	private final static double LANDGEN = 0;
 
 	private final static double WATERGEN = -0.5;
 
@@ -33,15 +32,18 @@ public class Main {
 		System.out.println("seed: " + seed);
 		System.out.println("forest seed: " + seedForest);
 
-		//displayRandomMap(WIDTH, HEIGHT, LANDGEN, WATERGEN);
-		//displaySmoothMap(WIDTH, HEIGHT, DEGREES, LANDGEN, WATERGEN);
-		//displayRevisedSmoothMap(WIDTH, HEIGHT, LANDGEN, WATERGEN);
-		//displayRandomNoise(WIDTH, HEIGHT);
-		//displaySmoothNoise(WIDTH, HEIGHT, 5);
-		//displaySmoothNoise(WIDTH, HEIGHT, 10);
-		//displayPerlinNoise(WIDTH, HEIGHT, randomSeed);
-		//displayPerlinMap(WIDTH, HEIGHT, randomSeed, LANDGEN, WATERGEN);
-		displayPerlinMapWithTexturing(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
+		//displayRandomMap(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
+		//displaySmoothMap(WIDTH, HEIGHT, 10, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
+		//displayRevisedSmoothMap(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
+		//displayRandomNoise(WIDTH, HEIGHT, seed);
+		//displaySmoothNoise(WIDTH, HEIGHT, seed, 5);
+		//displaySmoothNoise(WIDTH, HEIGHT, seed, 10);
+        //displayRevisedSmoothNoise(WIDTH, HEIGHT, seed);
+		//displayPerlinNoise(WIDTH, HEIGHT, seed);
+		displayPerlinMap(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
+		//displayPerlinMapWithTexturing(WIDTH, HEIGHT, seed, seedForest, LANDGEN, WATERGEN, MOUNTAINGEN, HILLGEN, BEACHGEN, FORESTGEN);
+
+		launch(args);
 	}
 	
 	// DIALOGS
@@ -202,12 +204,18 @@ public class Main {
 		randomNoise.initializeNoiseGrid();
 		openBasicNoiseDialog(randomNoise);
 	}
-	
+
 	private static void displaySmoothNoise(int width, int height, double seed, int degrees) {
 		SmoothNoise smoothNoise = new SmoothNoise(width, height, seed, degrees);
 		smoothNoise.initializeNoiseGrid();
 		openBasicNoiseDialog(smoothNoise);
-	}
+    }
+
+    private static void displayRevisedSmoothNoise(int width, int height, double seed) {
+        RevisedSmoothNoise revisedSmoothNoise = new RevisedSmoothNoise(width, height, seed);
+        revisedSmoothNoise.initializeNoiseGrid();
+        openBasicNoiseDialog(revisedSmoothNoise);
+    }
 	
 	private static void displayPerlinNoise(int width, int height, double seed) {
 		PerlinNoise perlinNoise = new PerlinNoise(width, height, seed, 0.5, 8);

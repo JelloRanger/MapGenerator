@@ -6,6 +6,8 @@ public class Terrain extends Point {
 
     protected LocationType locationType;
 
+    protected Location location;
+
     protected double score;
 	
 	public Terrain(int x, int y) {
@@ -21,6 +23,10 @@ public class Terrain extends Point {
         this.locationType = locationType;
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public void setScore(double amt) {
         score = amt;
     }
@@ -31,6 +37,10 @@ public class Terrain extends Point {
 
     public LocationType getLocationType() {
         return locationType;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public double getScore() {

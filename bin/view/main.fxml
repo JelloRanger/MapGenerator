@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane fx:id="mRootAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0000999999975" prefWidth="1280.000199999995" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="controller.UiController">
+  <children>
+
+    <AnchorPane fx:id="mCanvasAnchor" layoutX="226.0" layoutY="24.0" minHeight="376.0" prefHeight="697.0" prefWidth="1056.0">
+      <children>
+        <ProgressBar layoutX="0.0" layoutY="687.0" prefWidth="1101.0" progress="0.0" />
+      </children>
+    </AnchorPane>
+
+    <ScrollPane fx:id="mToolPane" layoutX="0.0" layoutY="25.0" prefHeight="696.9999000000025" prefWidth="225.0">
+      <content>
+
+        <GridPane alignment="TOP_LEFT" gridLinesVisible="false" prefHeight="361.0" prefWidth="225.0">
+          <children>
+            <Button fx:id="mGenerateButton" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <Button fx:id="mPersistenceDefaultButton" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Button fx:id="mOctavesDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label text="Persistence" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Label text="Octaves" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <TextField fx:id="mSeedField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <TextField fx:id="mPersistenceField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="mOctavesField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Seed" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+          </children>
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="91.0" minWidth="7.0" prefWidth="63.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.0" minWidth="7.0" prefWidth="87.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="172.0" minWidth="10.0" prefWidth="75.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
+
+      </content>
+    </ScrollPane>
+
+    <MenuBar fx:id="mMenuBar" layoutX="0.0" layoutY="0.0">
+
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem fx:id="mMenuClose" mnemonicParsing="false" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Delete" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+
+      </menus>
+    </MenuBar>
+  </children>
+</AnchorPane>

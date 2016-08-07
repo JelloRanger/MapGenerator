@@ -13,7 +13,7 @@ public class CityGeneration {
 
     private List<Terrain> citiesPlaced;
 
-    private final int NUM_CITIES = 50;
+    private int numCities;
 
     private final double RIVER_SCORE = 1;
 
@@ -25,10 +25,13 @@ public class CityGeneration {
 
     private final int MIN_CITY_DISTANCE = 75;
 
-    PriorityQueue<Terrain> cities = new PriorityQueue<>(NUM_CITIES, new CityComparator());
+    PriorityQueue<Terrain> cities;
 
-    public CityGeneration(Map map) {
+    public CityGeneration(Map map, int numCities) {
         mMap = map;
+        this.numCities = numCities;
+        cities = new PriorityQueue<>(numCities, new CityComparator());
+
         cityScoresGrid = new Grid(map.getWidth(), map.getHeight());
         cityScoresGrid.initializeGridWithTerrain();
         citiesPlaced =  new ArrayList<>();
@@ -84,7 +87,7 @@ public class CityGeneration {
 
     // place x number of cities based on rank and proximity
     private void placeCities() {
-        int numCitiesToBePlaced = NUM_CITIES;
+        int numCitiesToBePlaced = numCities;
         while (numCitiesToBePlaced > 0) {
             Terrain location = cities.poll();
             if (nearCity(location)) {
@@ -92,8 +95,9 @@ public class CityGeneration {
             }
 
             Terrain city = mMap.getTerrain(location.getX(), location.getY());
-            System.out.println(city.getX() + ", " + city.getY() + " " + city.getTerrainType());
+            //System.out.println(city.getX() + ", " + city.getY() + " " + city.getTerrainType());
             city.setLocationType(LocationType.CITY);
+            city.setLocation(new City());
             citiesPlaced.add(city);
             numCitiesToBePlaced--;
         }

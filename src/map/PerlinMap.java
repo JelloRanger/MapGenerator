@@ -7,14 +7,15 @@ import model.TerrainType;
 import noise.PerlinNoise;
 import procedural.CityGeneration;
 import procedural.LakesAndRiversGeneration;
+import procedural.NameGeneration;
 
 public class PerlinMap extends RandomMap {
 
-    protected static final double PERSISTENCE = 0.5;
+    protected Double mPersistence;
 
-    protected static final int OCTAVES = 8;
+    protected Integer mOctaves;
 
-    protected Grid waterGrid;
+    protected static final int NUM_CITIES = 50;
 
     public PerlinMap(int width,
                      int height,
@@ -29,15 +30,30 @@ public class PerlinMap extends RandomMap {
         super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
     }
 
+    public PerlinMap(int width,
+                     int height,
+                     double seed,
+                     double seedForest,
+                     double landGen,
+                     double waterGen,
+                     double mountainGen,
+                     double hillGen,
+                     double beachGen,
+                     double forestGen,
+                     double persistence,
+                     int octaves) {
+        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
+        mPersistence = persistence;
+        mOctaves = octaves;
+    }
+
     @Override
     public void generateMap() {
-        mNoise = new PerlinNoise(mWidth, mHeight, mSeed, PERSISTENCE, OCTAVES);
+        mNoise = new PerlinNoise(mWidth, mHeight, mSeed, mPersistence, mOctaves);
         mNoise.initializeMapGrid();
 
-        mForestNoise = new PerlinNoise(mWidth, mHeight, mSeedForest, PERSISTENCE, 6);
+        mForestNoise = new PerlinNoise(mWidth, mHeight, mSeedForest, mPersistence, 6);
         mForestNoise.initializeMapGrid();
-
-        generateLakesAndRivers();
 
         for (int y = 0; y < mHeight; y++) {
             for (int x = 0; x < mWidth; x++) {
@@ -45,7 +61,9 @@ public class PerlinMap extends RandomMap {
             }
         }
 
+        generateLakesAndRivers();
         generateCities();
+        generateNames();
     }
 
     @Override
@@ -54,7 +72,7 @@ public class PerlinMap extends RandomMap {
 
         TerrainType terrainType = terrain.getTerrainType();
         if (terrainType == null) {
-            if (mForestNoise.getGrid().getPoint(x, y).getElevation() >= mForestGen &&
+            if (mForestNoise != null && mForestNoise.getGrid().getPoint(x, y).getElevation() >= mForestGen &&
                     determineTerrainTypeBasedOnElevation(terrain, terrain.getElevation()).getTerrainType()
                             == TerrainType.LAND) {
                 terrain.setTerrainType(TerrainType.FOREST);
@@ -72,7 +90,12 @@ public class PerlinMap extends RandomMap {
     }
 
     protected void generateCities() {
-        CityGeneration cityGeneration = new CityGeneration(this);
+        CityGeneration cityGeneration = new CityGeneration(this, NUM_CITIES);
         cityGeneration.generate();
+    }
+
+    protected void generateNames() {
+        NameGeneration nameGeneration = new NameGeneration(this, NUM_CITIES);
+        nameGeneration.generate();
     }
 }

@@ -1,4 +1,4 @@
-package graphics;
+package view;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -33,9 +33,12 @@ public class ColorMapDialog {
 
 		for (int y = 0; y < map.getHeight(); y++) {
 			for (int x = 0; x < map.getWidth(); x++) {
-				if (map.getTerrain(x, y).getLocationType().equals(LocationType.CITY)) {
+				Terrain terrain = map.getTerrain(x, y);
+				if (terrain.getLocationType() != null && terrain.getLocationType().equals(LocationType.CITY)) {
                     graph.fillOval(x - OVAL_WIDTH / 2, y - OVAL_HEIGHT / 2, OVAL_WIDTH, OVAL_HEIGHT);
-
+                    graph.setColor(Color.black);
+                    graph.drawString(terrain.getLocation().getName(), x - OVAL_WIDTH * 4, y - OVAL_HEIGHT);
+                    graph.setColor(Color.red);
 				}
 			}
 		}
@@ -51,8 +54,12 @@ public class ColorMapDialog {
 		Color terrainColor;
 		switch (terrainType) {
 			case MOUNTAIN:
-				terrainColor = Color.gray;
+				//terrainColor = Color.gray;
+                terrainColor = Color.green;
 				break;
+            case HILL:
+                terrainColor = Color.green;
+                break;
 			case FOREST:
 				terrainColor = Color.orange;
 				break;
@@ -60,7 +67,8 @@ public class ColorMapDialog {
 				terrainColor = Color.green;
 				break;
 			case BEACH:
-				terrainColor = Color.yellow;
+				//terrainColor = Color.yellow;
+				terrainColor = Color.green;
 				break;
 			case WATER:
 				terrainColor = Color.blue;
