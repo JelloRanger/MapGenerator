@@ -88,7 +88,7 @@ public class CityGeneration {
     // place x number of cities based on rank and proximity
     private void placeCities() {
         int numCitiesToBePlaced = numCities;
-        while (numCitiesToBePlaced > 0) {
+        while (numCitiesToBePlaced > 0 && cities.size() > 0) {
             Terrain location = cities.poll();
             if (nearCity(location)) {
                 continue;

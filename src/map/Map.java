@@ -28,6 +28,18 @@ public abstract class Map {
 
 	protected Noise mForestNoise;
 
+	protected boolean mLandEnabled = true;
+
+	protected boolean mHillsEnabled = true;
+
+	protected boolean mMountainsEnabled = true;
+
+	protected boolean mRiversEnabled = true;
+
+	protected boolean mCitiesEnabled = true;
+
+	protected boolean mNamesEnabled = true;
+
 	public abstract void generateMap();
 	
 	public int getWidth() {
@@ -41,10 +53,6 @@ public abstract class Map {
 	public Noise getNoise() {
 		return mNoise;
 	}
-
-    public double getLandGen() {
-        return mLandGen;
-    }
 	
 	public abstract Terrain getTerrain(int x, int y);
 

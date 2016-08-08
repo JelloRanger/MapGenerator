@@ -41,10 +41,22 @@ public class PerlinMap extends RandomMap {
                      double beachGen,
                      double forestGen,
                      double persistence,
-                     int octaves) {
+                     int octaves,
+                     boolean landEnabled,
+                     boolean hillsEnabled,
+                     boolean mountainsEnabled,
+                     boolean riversEnabled,
+                     boolean citiesEnabled,
+                     boolean namesEnabled) {
         super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
         mPersistence = persistence;
         mOctaves = octaves;
+        mLandEnabled = landEnabled;
+        mHillsEnabled = hillsEnabled;
+        mMountainsEnabled = mountainsEnabled;
+        mRiversEnabled = riversEnabled;
+        mCitiesEnabled = citiesEnabled;
+        mNamesEnabled = namesEnabled;
     }
 
     @Override
@@ -52,8 +64,7 @@ public class PerlinMap extends RandomMap {
         mNoise = new PerlinNoise(mWidth, mHeight, mSeed, mPersistence, mOctaves);
         mNoise.initializeMapGrid();
 
-        mForestNoise = new PerlinNoise(mWidth, mHeight, mSeedForest, mPersistence, 6);
-        mForestNoise.initializeMapGrid();
+        //generateForests();
 
         for (int y = 0; y < mHeight; y++) {
             for (int x = 0; x < mWidth; x++) {
@@ -61,9 +72,15 @@ public class PerlinMap extends RandomMap {
             }
         }
 
-        generateLakesAndRivers();
-        generateCities();
-        generateNames();
+        if (mRiversEnabled) {
+            generateLakesAndRivers();
+        }
+        if (mCitiesEnabled) {
+            generateCities();
+        }
+        if (mNamesEnabled) {
+            generateNames();
+        }
     }
 
     @Override
@@ -82,6 +99,11 @@ public class PerlinMap extends RandomMap {
         }
 
         return terrain;
+    }
+
+    protected void generateForests() {
+        mForestNoise = new PerlinNoise(mWidth, mHeight, mSeedForest, mPersistence, 6);
+        mForestNoise.initializeMapGrid();
     }
 
     protected void generateLakesAndRivers() {

@@ -50,11 +50,11 @@ public class RandomMap extends Map {
 	protected Terrain determineTerrainTypeBasedOnElevation(Terrain terrain, double elevation) {
 		TerrainType terrainType;
 
-		if (elevation >= mMountainGen) {
+		if (elevation >= mMountainGen && mMountainsEnabled) {
 			terrainType = TerrainType.MOUNTAIN;
-		} else if (elevation >= mHillGen) {
+		} else if (elevation >= mHillGen && mHillsEnabled) {
 			terrainType = TerrainType.HILL;
-		} else if (elevation >= mLandGen) {
+		} else if (elevation >= mLandGen && mLandEnabled) {
 			terrainType = TerrainType.LAND;
 		} else if (elevation >= mLandGen + mBeachGen) {
 			terrainType = TerrainType.BEACH;
