@@ -1,11 +1,9 @@
 package controller;
 
-import image.ImageManager;
+import image.Superman;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,15 +11,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import map.PerlinMap;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,7 +118,7 @@ public class UiController {
 
     private Stage mStage;
 
-    private ImageManager mImageManager;
+    private BufferedImage mImage;
 
     private boolean mSeedEdited = false;
 
@@ -146,13 +146,10 @@ public class UiController {
 
         mMenuClose.setOnAction(this::handleMenuClose);
 
-        mImageManager = new ImageManager(WIDTH,HEIGHT);
         mPersistenceField.setText(String.valueOf(PERSISTENCE));
         mOctavesField.setText(String.valueOf(OCTAVES));
 
         generateMap();
-        mImageManager.getCanvas().setId("mCanvasMap");
-        mCanvasAnchor.getChildren().add(mImageManager.getCanvas());
 
         //setZoom();
 
@@ -176,7 +173,7 @@ public class UiController {
         mCityGenDefaultButton.setOnAction(this::handleCityGenDefaultButton);
     }
 
-    private void setZoom() {
+    /*private void setZoom() {
         ImageView imageView = new ImageView();
         DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
 
@@ -205,7 +202,7 @@ public class UiController {
         imageView.setImage(writableImage);
         imageView.preserveRatioProperty().set(true);
         //mCanvasAnchor.setContent(imageView);
-    }
+    }*/
 
     public void setStageAndSetupListeners(Stage stage) {
         mStage = stage;
@@ -259,6 +256,8 @@ public class UiController {
         mCityGenTextField.setText(String.valueOf(""));
     }
 
+
+    // TODO: get save image working again without deprecated ImageManager
     private void handleSaveImageButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(mSaveImageButton.getText());
@@ -268,9 +267,9 @@ public class UiController {
         File file = fileChooser.showSaveDialog(mStage);
         if (file != null) {
             try {
-                WritableImage writableImage = new WritableImage((int) mImageManager.getCanvas().getWidth(),
-                        (int) mImageManager.getCanvas().getHeight());
-                mImageManager.getCanvas().snapshot(null, writableImage);
+                WritableImage writableImage = new WritableImage(mImage.getWidth(),
+                        mImage.getHeight());
+                SwingFXUtils.toFXImage(mImage, writableImage);
                 ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
             } catch (IOException ioe) {
                 Logger.getLogger(TAG).log(Level.SEVERE, null, ioe);
@@ -281,28 +280,28 @@ public class UiController {
     private void generateMap() {
 
         verifyFields();
-        PerlinMap map = new PerlinMap(Integer.parseInt(mWidthTextField.getText()),
-                Integer.parseInt(mHeightTextField.getText()),
-                determineSeed(),
-                Math.random(),
-                Double.parseDouble(mLandGenTextField.getText()),
-                WATERGEN,
-                Double.parseDouble(mMountainGenTextField.getText()),
-                Double.parseDouble(mHillGenTextField.getText()),
-                BEACHGEN,
-                FORESTGEN,
-                Double.parseDouble(mPersistenceField.getText()),
-                Integer.parseInt(mOctavesField.getText()),
-                mLandGenCheckBox.isSelected(),
-                mHillGenCheckBox.isSelected(),
-                mMountainGenCheckBox.isSelected(),
-                mRiverGenCheckBox.isSelected(),
-                mCityGenCheckBox.isSelected(),
-                mNameGenCheckBox.isSelected());
-        map.generateMap();
-        mImageManager.setMap(map);
-        mImageManager.generateImage();
-        mSeedEdited = false;
+
+        // disable generate button while map is being computed
+        mGenerateButton.setDisable(true);
+
+        // run map generation in a background thread (so UI doesn't freeze)
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        MapTask mapTask = new MapTask();
+        executor.execute(mapTask);
+
+        // listen to result of UI thread, display the map and reenable the generate button
+        mapTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
+                new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                ImageView imageView = new ImageView();
+                imageView.setImage(SwingFXUtils.toFXImage(mapTask.getValue(), null));
+                mCanvasAnchor.getChildren().clear();
+                mCanvasAnchor.getChildren().add(imageView);
+                mGenerateButton.setDisable(false);
+                mSeedEdited = false;
+            }
+        });
     }
 
     private void verifyFields() {
@@ -347,6 +346,45 @@ public class UiController {
             return true;
         } catch (NumberFormatException nfe) {
             return false;
+        }
+    }
+
+    private class MapTask extends Task<BufferedImage> {
+
+        private PerlinMap map;
+
+        MapTask() {
+            this.map = new PerlinMap(Integer.parseInt(mWidthTextField.getText()),
+                    Integer.parseInt(mHeightTextField.getText()),
+                    determineSeed(),
+                    Math.random(),
+                    Double.parseDouble(mLandGenTextField.getText()),
+                    WATERGEN,
+                    Double.parseDouble(mMountainGenTextField.getText()),
+                    Double.parseDouble(mHillGenTextField.getText()),
+                    BEACHGEN,
+                    FORESTGEN,
+                    Double.parseDouble(mPersistenceField.getText()),
+                    Integer.parseInt(mOctavesField.getText()),
+                    mLandGenCheckBox.isSelected(),
+                    mHillGenCheckBox.isSelected(),
+                    mMountainGenCheckBox.isSelected(),
+                    mRiverGenCheckBox.isSelected(),
+                    mCityGenCheckBox.isSelected(),
+                    mNameGenCheckBox.isSelected());
+        }
+
+        @Override
+        protected BufferedImage call() {
+            try {
+                Superman superman = new Superman(map);
+                superman.generateImage();
+                mImage = superman.getImage();
+                return mImage;
+            } catch (Exception e) {
+                Logger.getLogger(TAG).log(Level.SEVERE, "test", e);
+            }
+            return null;
         }
     }
 }

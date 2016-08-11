@@ -19,7 +19,7 @@ public class RevisedSmoothNoise extends RandomNoise {
 	public void initializeMapGrid() {
 		super.initializeMapGrid();
 		
-		smoothElevation();
+		//smoothElevation();
 	}
 
 	private void smoothElevation() {

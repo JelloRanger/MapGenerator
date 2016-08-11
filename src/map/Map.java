@@ -53,7 +53,31 @@ public abstract class Map {
 	public Noise getNoise() {
 		return mNoise;
 	}
-	
+
+	public boolean isLandEnabled() {
+		return mLandEnabled;
+	}
+
+	public boolean isHillsEnabled() {
+		return mHillsEnabled;
+	}
+
+	public boolean isMountainsEnabled() {
+		return mMountainsEnabled;
+	}
+
+	public boolean isRiversEnabled() {
+		return mRiversEnabled;
+	}
+
+	public boolean isCitiesEnabled() {
+		return mCitiesEnabled;
+	}
+
+	public boolean isNamesEnabled() {
+		return mNamesEnabled;
+	}
+
 	public abstract Terrain getTerrain(int x, int y);
 
 	protected abstract Terrain determineTerrainTypeBasedOnElevation(Terrain terrain, double elevation);
