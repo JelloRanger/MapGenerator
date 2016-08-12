@@ -8,6 +8,7 @@ import noise.PerlinNoise;
 import procedural.CityGeneration;
 import procedural.LakesAndRiversGeneration;
 import procedural.NameGeneration;
+import procedural.TerritoryGeneration;
 
 public class PerlinMap extends RandomMap {
 
@@ -75,11 +76,15 @@ public class PerlinMap extends RandomMap {
         if (mRiversEnabled) {
             generateLakesAndRivers();
         }
-        if (mCitiesEnabled) {
+        if (true) {
             generateCities();
         }
         if (mNamesEnabled) {
             generateNames();
+        }
+
+        if (mCitiesEnabled) {
+            generateTerritories();
         }
     }
 
@@ -119,5 +124,10 @@ public class PerlinMap extends RandomMap {
     protected void generateNames() {
         NameGeneration nameGeneration = new NameGeneration(this, NUM_CITIES);
         nameGeneration.generate();
+    }
+
+    protected void generateTerritories() {
+        TerritoryGeneration territoryGeneration = new TerritoryGeneration(this);
+        territoryGeneration.generate();
     }
 }

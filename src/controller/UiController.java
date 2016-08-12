@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import map.PerlinMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -114,11 +115,16 @@ public class UiController {
     private CheckBox mNameGenCheckBox;
 
     @FXML
+    private CheckBox mPoliticalMapCheckBox;
+
+    @FXML
     private MenuItem mMenuClose;
 
     private Stage mStage;
 
     private BufferedImage mImage;
+
+    private Superman mSuperman;
 
     private boolean mSeedEdited = false;
 
@@ -171,6 +177,9 @@ public class UiController {
         mMountainGenDefaultButton.setOnAction(this::handleMountainGenDefaultButton);
         mRiverGenDefaultButton.setOnAction(this::handleRiverGenDefaultButton);
         mCityGenDefaultButton.setOnAction(this::handleCityGenDefaultButton);
+
+        // CheckBox listeners
+        mPoliticalMapCheckBox.setOnAction(this::handlePoliticalMapCheckBox);
     }
 
     /*private void setZoom() {
@@ -256,8 +265,22 @@ public class UiController {
         mCityGenTextField.setText(String.valueOf(""));
     }
 
+    // CheckBox listeners
 
-    // TODO: get save image working again without deprecated ImageManager
+    private void handlePoliticalMapCheckBox(ActionEvent event) {
+        if (mPoliticalMapCheckBox.isSelected()) {
+            mSuperman.colorPoliticalMap();
+        } else {
+            mSuperman.colorTerrain();
+        }
+
+        mImage = mSuperman.getImage();
+        ImageView imageView = new ImageView();
+        imageView.setImage(SwingFXUtils.toFXImage(mImage, null));
+        mCanvasAnchor.getChildren().clear();
+        mCanvasAnchor.getChildren().add(imageView);
+    }
+
     private void handleSaveImageButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(mSaveImageButton.getText());
@@ -377,9 +400,9 @@ public class UiController {
         @Override
         protected BufferedImage call() {
             try {
-                Superman superman = new Superman(map);
-                superman.generateImage();
-                mImage = superman.getImage();
+                mSuperman = new Superman(map);
+                mSuperman.generateImage();
+                mImage = mSuperman.getImage();
                 return mImage;
             } catch (Exception e) {
                 Logger.getLogger(TAG).log(Level.SEVERE, "test", e);

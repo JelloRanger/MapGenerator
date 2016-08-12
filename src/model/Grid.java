@@ -51,10 +51,6 @@ public class Grid {
 	public List<Point> getAdjacentPoints(Point point, int degrees) {
 		return getAdjacentPoints(point.getX(), point.getY(), degrees);
 	}
-
-	public List<Point> getDirectlyAdjacentPoints(Point point) {
-		return getDirectlyAdjacentPoints(point.getX(), point.getY());
-	}
 	
 	public List<Point> getAdjacentPoints(int x, int y, int degrees) {
 		List<Point> adjacentPoints = new ArrayList<>();
@@ -72,22 +68,25 @@ public class Grid {
 		return adjacentPoints;
 	}
 
-	public List<Point> getDirectlyAdjacentPoints(int x, int y) {
-		List<Point> adjacentPoints = new ArrayList<>();
+	public List<Terrain> getAdjacentTerrain(Terrain terrain, int degrees) {
+        return getAdjacentTerrain(terrain.getX(), terrain.getY(), degrees);
+    }
 
-		for (int dy = -1; dy <= 1; dy++) {
-			for (int dx = -1; dx <= 1; dx++) {
-				if ((dx != 0 || dy != 0) &&
-						x + dx >= 0 && x + dx < width &&
-						y + dy >= 0 && y + dy < height &&
-						(dx + dy) % 2 == 1) {
-					adjacentPoints.add(grid.get(y + dy).get(x + dx));
-				}
-			}
-		}
+    public List<Terrain> getAdjacentTerrain(int x, int y, int degrees) {
+        List<Terrain> adjacentTerrain = new ArrayList<>();
 
-		return adjacentPoints;
-	}
+        for (int dy = degrees * -1; dy <= degrees; dy++) {
+            for (int dx = degrees * -1; dx <= degrees; dx++) {
+                if ((dx != 0 || dy != 0) &&
+                        x + dx >= 0 && x + dx < width &&
+                        y + dy >= 0 && y + dy < height) {
+                    adjacentTerrain.add((Terrain) grid.get(y + dy).get(x + dx));
+                }
+            }
+        }
+
+        return adjacentTerrain;
+    }
 
 	public int getWidth() {
 		return width;

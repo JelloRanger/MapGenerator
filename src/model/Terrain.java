@@ -9,10 +9,13 @@ public class Terrain extends Point {
     protected Location location;
 
     protected double score;
+
+    protected int territory;
 	
 	public Terrain(int x, int y) {
 		super(x, y);
 		score = 0;
+        territory = -1;
 	}
 	
 	public void setTerrainType(TerrainType terrainType) {
@@ -31,6 +34,10 @@ public class Terrain extends Point {
         score = amt;
     }
 
+    public void setTerritory(int num) {
+        territory = num;
+    }
+
 	public TerrainType getTerrainType() {
 		return terrainType;
 	}
@@ -45,5 +52,9 @@ public class Terrain extends Point {
 
     public double getScore() {
         return score;
+    }
+
+    public int getTerritory() {
+        return territory;
     }
 }

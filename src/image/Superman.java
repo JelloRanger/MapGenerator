@@ -20,7 +20,7 @@ public class Superman {
 
     public Superman(Map map) {
         mMap = map;
-        mImage = new BufferedImage(mMap.getWidth(), mMap.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        mImage = new BufferedImage(mMap.getWidth(), mMap.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
     }
     
     public void generateImage() {
@@ -33,6 +33,11 @@ public class Superman {
     
     private void initializeMap() {
         mMap.generateMap();
+        colorTerrain();
+
+    }
+
+    public void colorTerrain() {
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 mImage.setRGB(x, y, getColorByTerrain(mMap.getTerrain(x, y)).getRGB());
@@ -43,19 +48,77 @@ public class Superman {
             return;
         }
 
+        if (mMap.isCitiesEnabled()) {
+            colorCities();
+        }
+
+        if (mMap.isNamesEnabled()) {
+            colorNames();
+        }
+    }
+
+    public void colorPoliticalMap() {
+        colorCountries();
+
+        // Color cities and names, if enabled, on top of countries
+        if (mMap.isCitiesEnabled()) {
+            colorCities();
+        }
+        if (mMap.isNamesEnabled()) {
+            colorNames();
+        }
+    }
+
+    private void colorCities() {
         Graphics2D graph = mImage.createGraphics();
         graph.setColor(Color.red);
-
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 Terrain terrain = mMap.getTerrain(x, y);
                 if (terrain.getLocationType() != null && terrain.getLocationType().equals(LocationType.CITY)) {
                     graph.fillOval(x - OVAL_WIDTH / 2, y - OVAL_HEIGHT / 2, OVAL_WIDTH, OVAL_HEIGHT);
-                    if (mMap.isNamesEnabled()) {
-                        graph.setColor(Color.black);
-                        graph.drawString(terrain.getLocation().getName(), x - OVAL_WIDTH * 4, y - OVAL_HEIGHT);
-                        graph.setColor(Color.red);
-                    }
+                }
+            }
+        }
+    }
+
+    private void colorNames() {
+        Graphics2D graph = mImage.createGraphics();
+        graph.setColor(Color.black);
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                Terrain terrain = mMap.getTerrain(x, y);
+                if (terrain.getLocationType() != null && terrain.getLocationType().equals(LocationType.CITY)) {
+                    graph.drawString(terrain.getLocation().getName(), x - OVAL_WIDTH * 4, y - OVAL_HEIGHT);
+                }
+            }
+        }
+    }
+
+    private void colorCountries() {
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                Terrain terrain = mMap.getTerrain(x, y);
+                int territoryMod = terrain.getTerritory() % 6;
+                switch (territoryMod) {
+                    case 0:
+                        mImage.setRGB(x, y, Color.red.darker().getRGB());
+                        break;
+                    case 1:
+                        mImage.setRGB(x, y, Color.orange.darker().getRGB());
+                        break;
+                    case 2:
+                        mImage.setRGB(x, y, Color.yellow.darker().getRGB());
+                        break;
+                    case 3:
+                        mImage.setRGB(x, y, Color.green.darker().getRGB());
+                        break;
+                    case 4:
+                        mImage.setRGB(x, y, Color.blue.darker().getRGB());
+                        break;
+                    case 5:
+                        mImage.setRGB(x, y, Color.magenta.darker().getRGB());
+                        break;
                 }
             }
         }
