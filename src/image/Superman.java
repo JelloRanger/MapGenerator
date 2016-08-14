@@ -7,6 +7,10 @@ import model.TerrainType;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
+
+import static java.lang.StrictMath.abs;
 
 public class Superman {
 
@@ -44,21 +48,53 @@ public class Superman {
             }
         }
 
-        if (!mMap.isCitiesEnabled()) {
-            return;
-        }
+        shadeMap();
 
         if (mMap.isCitiesEnabled()) {
             colorCities();
         }
 
-        if (mMap.isNamesEnabled()) {
+        if (mMap.isCitiesEnabled() && mMap.isNamesEnabled()) {
             colorNames();
         }
     }
 
+    private void shadeMap() {
+        BufferedImage copyImage = deepCopy(mImage);
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                Terrain terrain = mMap.getTerrain(x, y);
+                double slope = mMap.getNoise().getGrid().getSlope(terrain);
+                if (slope < 0) {
+                    mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.white,
+                            (int) (4 * abs(slope) * 50)).getRGB());
+                } else if (slope > 0) {
+                    mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.black,
+                            (int) (4 * (slope) * 50)).getRGB());
+                }
+            }
+        }
+    }
+
+    private BufferedImage deepCopy(BufferedImage bufferedImage) {
+        ColorModel cm = bufferedImage.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bufferedImage.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
+    private Color mixColorsWithAlpha(Color color1, Color color2, int alpha) {
+        float factor = alpha / 255f;
+        int red = (int) (color1.getRed() * (1 - factor) + color2.getRed() * factor);
+        int green = (int) (color1.getGreen() * (1 - factor) + color2.getGreen() * factor);
+        int blue = (int) (color1.getBlue() * (1 - factor) + color2.getBlue() * factor);
+        return new Color(red, green, blue);
+    }
+
     public void colorPoliticalMap() {
         colorCountries();
+
+        shadeMap();
 
         // Color cities and names, if enabled, on top of countries
         if (mMap.isCitiesEnabled()) {
@@ -96,6 +132,7 @@ public class Superman {
     }
 
     private void colorCountries() {
+        //BufferedImage copyImage = deepCopy(mImage);
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 Terrain terrain = mMap.getTerrain(x, y);
@@ -103,21 +140,27 @@ public class Superman {
                 switch (territoryMod) {
                     case 0:
                         mImage.setRGB(x, y, Color.red.darker().getRGB());
+                        //mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.red.darker(), 128).getRGB());
                         break;
                     case 1:
                         mImage.setRGB(x, y, Color.orange.darker().getRGB());
+                        //mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.orange.darker(), 128).getRGB());
                         break;
                     case 2:
                         mImage.setRGB(x, y, Color.yellow.darker().getRGB());
+                        //mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.yellow.darker(), 128).getRGB());
                         break;
                     case 3:
                         mImage.setRGB(x, y, Color.green.darker().getRGB());
+                        //mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.green.darker(), 128).getRGB());
                         break;
                     case 4:
                         mImage.setRGB(x, y, Color.blue.darker().getRGB());
+                        //mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.blue.darker(), 128).getRGB());
                         break;
                     case 5:
                         mImage.setRGB(x, y, Color.magenta.darker().getRGB());
+                        //mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.magenta.darker(), 128).getRGB());
                         break;
                 }
             }
@@ -132,47 +175,47 @@ public class Superman {
         Color terrainColor;
         switch (terrainType) {
             case MOUNTAIN:
-                //terrainColor = Color.GREY;
+                terrainColor = new Color(50, 50, 50);
                 //terrainColor = new Color(244, 241, 222);
                 //terrainColor = new Color(118, 112, 88);
                 //terrainColor = averageColors(new Color(118, 112, 88), new Color(0, 0, 0), percent);
-                terrainColor = averageColors(new Color(50,50,50), new Color(128, 128, 128), percent);
+                //terrainColor = averageColors(new Color(50,50,50), new Color(128, 128, 128), percent);
                 break;
             case HILL:
-                //terrainColor = Color.SADDLEBROWN;
+                terrainColor = new Color(134, 151, 81);
                 //terrainColor = new Color(166, 149, 102);
                 //terrainColor = new Color(134, 151, 81);
-                terrainColor = averageColors(new Color(134, 151, 81), new Color(0, 0, 0), percent);
+                //terrainColor = averageColors(new Color(134, 151, 81), new Color(0, 0, 0), percent);
                 break;
             case FOREST:
                 //terrainColor = Color.DARKGREEN;
                 terrainColor = new Color(50, 70, 33);
                 break;
             case LAND:
-                //terrainColor = Color.GREEN;
+                terrainColor = new Color(29, 128, 64);
                 //terrainColor = new Color(41, 59, 33);
-                terrainColor = new Color(39, 128, 64);
+                //terrainColor = new Color(39, 128, 64);
                 //terrainColor = averageColors(new Color(29, 128, 64), new Color(18, 61, 30), percent);
-                terrainColor = averageColors(new Color(29, 128, 64), new Color(0, 45, 0), percent);
+                //terrainColor = averageColors(new Color(29, 128, 64), new Color(0, 45, 0), percent);
                 break;
             case BEACH:
-                //terrainColor = Color.TAN;
+                terrainColor = new Color(29, 78, 145);
                 //terrainColor = new Color(9, 13, 47);
                 //terrainColor = new Color(51, 101, 167);
-                terrainColor = averageColors(new Color(29, 78, 145), new Color(14, 37, 69), percent);
+                //terrainColor = averageColors(new Color(29, 78, 145), new Color(14, 37, 69), percent);
                 break;
             case WATER:
-                //terrainColor = Color.BLUE;
+                terrainColor = new Color(29, 78, 145);
                 //terrainColor = new Color(1, 0, 14);
                 //terrainColor = new Color(29, 78, 145);
                 //terrainColor = averageColors(new Color(29, 78, 145), new Color(18, 49, 90), percent);
-                terrainColor = averageColors(new Color(29, 78, 145), new Color(14, 37, 69), percent);
+                //terrainColor = averageColors(new Color(29, 78, 145), new Color(14, 37, 69), percent);
                 break;
             case RIVER:
-                //terrainColor = Color.BLUE;
+                terrainColor = new Color(29, 78, 145);
                 //terrainColor = new Color(1, 0, 14);
                 //terrainColor = new Color(29, 78, 145);
-                terrainColor = averageColors(new Color(29, 78, 145), new Color(14, 37, 69), percent);
+                //terrainColor = averageColors(new Color(29, 78, 145), new Color(14, 37, 69), percent);
                 break;
             default:
                 terrainColor = Color.WHITE;

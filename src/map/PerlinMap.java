@@ -1,6 +1,5 @@
 package map;
 
-import model.Grid;
 import model.LocationType;
 import model.Terrain;
 import model.TerrainType;
@@ -76,9 +75,11 @@ public class PerlinMap extends RandomMap {
         if (mRiversEnabled) {
             generateLakesAndRivers();
         }
-        if (true) {
-            generateCities();
-        }
+
+        // We need to generate cities regardless if we display them or not since
+        // they're used to create country starting points
+        generateCities();
+
         if (mNamesEnabled) {
             generateNames();
         }

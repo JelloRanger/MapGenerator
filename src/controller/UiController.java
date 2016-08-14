@@ -136,9 +136,9 @@ public class UiController {
 
     private final static double WATERGEN = -0.5;
 
-    private final static double MOUNTAINGEN = 0.5;
+    private final static double MOUNTAINGEN = 0.8;
 
-    private final static double HILLGEN = 0.4;
+    private final static double HILLGEN = 0.7;
 
     private final static double BEACHGEN = -0.0125;
 

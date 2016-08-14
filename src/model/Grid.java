@@ -88,6 +88,18 @@ public class Grid {
         return adjacentTerrain;
     }
 
+	public double getSlope(Point point) {
+		return getSlope(point.getX(), point.getY());
+	}
+
+	public double getSlope(int x, int y) {
+		if (x - 1 < 0 || y - 1 < 0) {
+			return 0;
+		}
+
+		return grid.get(y - 1).get(x - 1).getElevation() - grid.get(y).get(x).getElevation();
+	}
+
 	public int getWidth() {
 		return width;
 	}
