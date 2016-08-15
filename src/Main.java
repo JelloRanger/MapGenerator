@@ -1,4 +1,4 @@
-import view.ColorMapDialog;
+/*import view.ColorMapDialog;
 import view.SmoothColorMapDialog;
 import view.BasicNoiseDialog;
 import map.*;
@@ -223,4 +223,4 @@ public class Main {
 		openBasicNoiseDialog(perlinNoise);
 	}
 
-}
+}*/

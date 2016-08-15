@@ -1,5 +1,7 @@
 package noise;
 
+import metrics.Metric;
+import metrics.MetricKey;
 import model.Point;
 
 public class PerlinNoise extends RevisedSmoothNoise {
@@ -29,9 +31,11 @@ public class PerlinNoise extends RevisedSmoothNoise {
 
     @Override
     public void initializeMapGrid() {
+        Metric.start(MetricKey.NOISEGENERATION);
         super.initializeMapGrid();
 
         perlinElevation();
+        Metric.record(MetricKey.NOISEGENERATION);
     }
 
     private void perlinElevation() {

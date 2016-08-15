@@ -50,7 +50,7 @@
             <Button fx:id="mCityGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="10" />
             <Button fx:id="mSaveImageButton" mnemonicParsing="false" text="Save Image" GridPane.columnIndex="1" GridPane.rowIndex="14" />
             <CheckBox fx:id="mPoliticalMapCheckBox" disable="true" mnemonicParsing="false" text="Political Map" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="13" />
-            <CheckBox fx:id="mTerritoryGenCheckBox" mnemonicParsing="false" text="Country Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="12" />
+            <CheckBox fx:id="mTerritoryGenCheckBox" mnemonicParsing="false" text="Territory Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="12" />
           </children>
           <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="91.0" minWidth="7.0" prefWidth="63.0" />

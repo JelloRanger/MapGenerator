@@ -7,8 +7,9 @@ public class SmoothMap extends RandomMap {
 	protected int mDegrees;
 	
 	public SmoothMap(int width, int height, double seed, double seedForest, int degrees, double landGen,
-					 double waterGen, double mountainGen, double hillGen, double beachGen, double forestGen) {
-		super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
+					 double waterGen, double mountainGen, double hillGen, double beachGen, double forestGen,
+					 int cityGen) {
+		super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen, cityGen);
 		
 		mDegrees = degrees;
 	}

@@ -46,7 +46,7 @@ public class TerritoryGeneration {
             Terrain terrain = mTerrainToBePlaced.remove(0);
             List<Terrain> adjacentTerrains = mMap.getNoise().getGrid().getAdjacentTerrain(terrain, 1);
             for (Terrain adjacentTerrain : adjacentTerrains) {
-                if (!(adjacentTerrain.getTerrainType().equals(TerrainType.MOUNTAIN) ||
+                if (!(/*adjacentTerrain.getTerrainType().equals(TerrainType.MOUNTAIN) ||*/
                         adjacentTerrain.getTerrainType().equals(TerrainType.RIVER) ||
                         adjacentTerrain.getTerrainType().equals(TerrainType.WATER) ||
                         adjacentTerrain.getTerrainType().equals(TerrainType.RIVER_BANK) ||
@@ -54,7 +54,7 @@ public class TerritoryGeneration {
                         adjacentTerrain.getTerritory() == -1) {
 
                     adjacentTerrain.setTerritory(terrain.getTerritory());
-                    if (Math.random() > 0.3)
+                    if (Math.random() > 0.2)
                         mTerrainToBePlaced.add(adjacentTerrain);
                 }
             }

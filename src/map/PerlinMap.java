@@ -1,5 +1,7 @@
 package map;
 
+import metrics.Metric;
+import metrics.MetricKey;
 import model.LocationType;
 import model.Terrain;
 import model.TerrainType;
@@ -15,8 +17,6 @@ public class PerlinMap extends RandomMap {
 
     protected Integer mOctaves;
 
-    protected static final int NUM_CITIES = 50;
-
     public PerlinMap(int width,
                      int height,
                      double seed,
@@ -26,8 +26,9 @@ public class PerlinMap extends RandomMap {
                      double mountainGen,
                      double hillGen,
                      double beachGen,
-                     double forestGen) {
-        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
+                     double forestGen,
+                     int cityGen) {
+        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen, cityGen);
     }
 
     public PerlinMap(int width,
@@ -40,6 +41,7 @@ public class PerlinMap extends RandomMap {
                      double hillGen,
                      double beachGen,
                      double forestGen,
+                     int cityGen,
                      double persistence,
                      int octaves,
                      boolean landEnabled,
@@ -47,8 +49,9 @@ public class PerlinMap extends RandomMap {
                      boolean mountainsEnabled,
                      boolean riversEnabled,
                      boolean citiesEnabled,
-                     boolean namesEnabled) {
-        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen);
+                     boolean namesEnabled,
+                     boolean territoriesEnabled) {
+        super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen, cityGen);
         mPersistence = persistence;
         mOctaves = octaves;
         mLandEnabled = landEnabled;
@@ -57,6 +60,7 @@ public class PerlinMap extends RandomMap {
         mRiversEnabled = riversEnabled;
         mCitiesEnabled = citiesEnabled;
         mNamesEnabled = namesEnabled;
+        mTerritoriesEnabled = territoriesEnabled;
     }
 
     @Override
@@ -76,15 +80,17 @@ public class PerlinMap extends RandomMap {
             generateLakesAndRivers();
         }
 
-        // We need to generate cities regardless if we display them or not since
-        // they're used to create country starting points
-        generateCities();
+        // We need to generate cities if territories are enabled since
+        // they're used to create territory starting points
+        if (mCitiesEnabled || mTerritoriesEnabled) {
+            generateCities();
+        }
 
-        if (mNamesEnabled) {
+        if (mCitiesEnabled && mNamesEnabled) {
             generateNames();
         }
 
-        if (mCitiesEnabled) {
+        if (mCitiesEnabled && mTerritoriesEnabled) {
             generateTerritories();
         }
     }
@@ -113,22 +119,38 @@ public class PerlinMap extends RandomMap {
     }
 
     protected void generateLakesAndRivers() {
+        Metric.start(MetricKey.RIVERGENERATION);
         LakesAndRiversGeneration lakesAndRiversGeneration = new LakesAndRiversGeneration(this);
         lakesAndRiversGeneration.generate();
+        Metric.record(MetricKey.RIVERGENERATION);
     }
 
     protected void generateCities() {
-        CityGeneration cityGeneration = new CityGeneration(this, NUM_CITIES);
+        Metric.start(MetricKey.CITYGENERATION);
+        CityGeneration cityGeneration = new CityGeneration(this, mCityGen);
         cityGeneration.generate();
+        Metric.record(MetricKey.CITYGENERATION);
     }
 
     protected void generateNames() {
-        NameGeneration nameGeneration = new NameGeneration(this, NUM_CITIES);
+        Metric.start(MetricKey.NAMEGENERATION);
+        NameGeneration nameGeneration = new NameGeneration(this, mCityGen);
         nameGeneration.generate();
+        Metric.record(MetricKey.NAMEGENERATION);
     }
 
     protected void generateTerritories() {
+        Metric.start(MetricKey.TERRITORYGENERATION);
         TerritoryGeneration territoryGeneration = new TerritoryGeneration(this);
         territoryGeneration.generate();
+        Metric.record(MetricKey.TERRITORYGENERATION);
+    }
+
+    public Double getPersistence() {
+        return mPersistence;
+    }
+
+    public Integer getOctaves() {
+        return mOctaves;
     }
 }

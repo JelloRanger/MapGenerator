@@ -15,7 +15,8 @@ public class RandomMap extends Map {
                      double mountainGen,
 					 double hillGen,
 					 double beachGen,
-                     double forestGen) {
+                     double forestGen,
+					 int cityGen) {
 
 		mWidth = width;
 		mHeight = height;
@@ -27,6 +28,7 @@ public class RandomMap extends Map {
 		mHillGen = hillGen;
 		mBeachGen = beachGen;
 		mForestGen = forestGen;
+		mCityGen = cityGen;
 	}
 	
 	@Override

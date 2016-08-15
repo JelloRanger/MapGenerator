@@ -1,0 +1,12 @@
+package metrics;
+
+public enum MetricKey {
+
+    NOISEGENERATION,
+    RIVERGENERATION,
+    CITYGENERATION,
+    NAMEGENERATION,
+    TERRITORYGENERATION,
+    SHADEMAP
+
+}

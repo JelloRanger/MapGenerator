@@ -1,7 +1,11 @@
 package controller;
 
-import image.Superman;
+import image.ImageManager;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.embed.swing.SwingFXUtils;
@@ -11,13 +15,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import map.PerlinMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +36,9 @@ public class UiController {
 
     @FXML
     private AnchorPane mCanvasAnchor;
+
+    @FXML
+    private ProgressIndicator mLoadingCircle;
 
     @FXML
     private Button mGenerateButton;
@@ -56,9 +63,6 @@ public class UiController {
 
     @FXML
     private Button mMountainGenDefaultButton;
-
-    @FXML
-    private Button mRiverGenDefaultButton;
 
     @FXML
     private Button mCityGenDefaultButton;
@@ -91,9 +95,6 @@ public class UiController {
     private TextField mMountainGenTextField;
 
     @FXML
-    private TextField mRiverGenTextField;
-
-    @FXML
     private TextField mCityGenTextField;
 
     @FXML
@@ -115,6 +116,9 @@ public class UiController {
     private CheckBox mNameGenCheckBox;
 
     @FXML
+    private CheckBox mTerritoryGenCheckBox;
+
+    @FXML
     private CheckBox mPoliticalMapCheckBox;
 
     @FXML
@@ -124,25 +128,29 @@ public class UiController {
 
     private BufferedImage mImage;
 
-    private Superman mSuperman;
+    private ImageManager mImageManager;
+
+    //private List<ImageView> mMapImageCache;
 
     private boolean mSeedEdited = false;
 
-    private final static int WIDTH = 1000;
+    private static final int WIDTH = 1000;
 
-    private final static int HEIGHT = 1000;
+    private static final int HEIGHT = 1000;
 
-    private final static double LANDGEN = 0;
+    private static final double LANDGEN = 0;
 
-    private final static double WATERGEN = -0.5;
+    private static final double WATERGEN = -0.5;
 
-    private final static double MOUNTAINGEN = 0.8;
+    private static final double MOUNTAINGEN = 0.8;
 
-    private final static double HILLGEN = 0.7;
+    private static final double HILLGEN = 0.7;
 
-    private final static double BEACHGEN = -0.0125;
+    private static final double BEACHGEN = -0.0125;
 
-    private final static double FORESTGEN = 0.2;
+    private static final double FORESTGEN = 0.2;
+
+    private static final int CITYGEN = 50;
 
     private static final double PERSISTENCE = 0.5;
 
@@ -152,12 +160,9 @@ public class UiController {
 
         mMenuClose.setOnAction(this::handleMenuClose);
 
-        mPersistenceField.setText(String.valueOf(PERSISTENCE));
-        mOctavesField.setText(String.valueOf(OCTAVES));
+        //mMapImageCache = new LinkedList<>();
 
         generateMap();
-
-        //setZoom();
 
         mGenerateButton.setOnAction(this::handleGenerateButtonAction);
         mPersistenceDefaultButton.setOnAction(this::handlePersistenceDefaultButtonAction);
@@ -175,14 +180,13 @@ public class UiController {
         mLandGenDefaultButton.setOnAction(this::handleLandGenDefaultButton);
         mHillGenDefaultButton.setOnAction(this::handleHillGenDefaultButton);
         mMountainGenDefaultButton.setOnAction(this::handleMountainGenDefaultButton);
-        mRiverGenDefaultButton.setOnAction(this::handleRiverGenDefaultButton);
         mCityGenDefaultButton.setOnAction(this::handleCityGenDefaultButton);
 
         // CheckBox listeners
         mPoliticalMapCheckBox.setOnAction(this::handlePoliticalMapCheckBox);
     }
 
-    /*private void setZoom() {
+    private void setZoom() {
         ImageView imageView = new ImageView();
         DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
 
@@ -205,13 +209,20 @@ public class UiController {
             }
         });
 
-        WritableImage writableImage = new WritableImage((int) mImageManager.getCanvas().getWidth(),
-                (int) mImageManager.getCanvas().getHeight());
-        mImageManager.getCanvas().snapshot(null, writableImage);
+        WritableImage writableImage = new WritableImage(mImage.getWidth(),
+                mImage.getHeight());
+        //SwingFXUtils.toFXImage(mImage, writableImage);
+
         imageView.setImage(writableImage);
+        imageView.setId("mapImage");
         imageView.preserveRatioProperty().set(true);
+
+
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+        mCanvasAnchor.getChildren().add(imageView);
+
         //mCanvasAnchor.setContent(imageView);
-    }*/
+    }
 
     public void setStageAndSetupListeners(Stage stage) {
         mStage = stage;
@@ -247,37 +258,38 @@ public class UiController {
 
     private void handleLandGenDefaultButton(ActionEvent event) {
         mLandGenTextField.setText(String.valueOf(LANDGEN));
+        mLandGenCheckBox.setSelected(true);
     }
 
     private void handleHillGenDefaultButton(ActionEvent event) {
         mHillGenTextField.setText(String.valueOf(HILLGEN));
+        mHillGenCheckBox.setSelected(true);
     }
 
     private void handleMountainGenDefaultButton(ActionEvent event) {
         mMountainGenTextField.setText(String.valueOf(MOUNTAINGEN));
-    }
-
-    private void handleRiverGenDefaultButton(ActionEvent event) {
-        mRiverGenTextField.setText(String.valueOf(""));
+        mMountainGenCheckBox.setSelected(true);
     }
 
     private void handleCityGenDefaultButton(ActionEvent event) {
-        mCityGenTextField.setText(String.valueOf(""));
+        mCityGenTextField.setText(String.valueOf(CITYGEN));
+        mCityGenCheckBox.setSelected(true);
     }
 
     // CheckBox listeners
 
     private void handlePoliticalMapCheckBox(ActionEvent event) {
         if (mPoliticalMapCheckBox.isSelected()) {
-            mSuperman.colorPoliticalMap();
+            mImageManager.colorPoliticalMap();
         } else {
-            mSuperman.colorTerrain();
+            mImageManager.colorTerrain();
         }
 
-        mImage = mSuperman.getImage();
+        mImage = mImageManager.getImage();
         ImageView imageView = new ImageView();
         imageView.setImage(SwingFXUtils.toFXImage(mImage, null));
-        mCanvasAnchor.getChildren().clear();
+        imageView.setId("mapImage");
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
         mCanvasAnchor.getChildren().add(imageView);
     }
 
@@ -302,10 +314,21 @@ public class UiController {
 
     private void generateMap() {
 
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+
         verifyFields();
+
+        /*if (mMapImageCache.size() > 0) {
+            ImageView imageView = mMapImageCache.remove(0);
+            mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+            mCanvasAnchor.getChildren().add(imageView);
+            setupCache(1);
+            return;
+        }*/
 
         // disable generate button while map is being computed
         mGenerateButton.setDisable(true);
+        mLoadingCircle.setVisible(true);
 
         // run map generation in a background thread (so UI doesn't freeze)
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -317,15 +340,46 @@ public class UiController {
                 new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
-                ImageView imageView = new ImageView();
-                imageView.setImage(SwingFXUtils.toFXImage(mapTask.getValue(), null));
-                mCanvasAnchor.getChildren().clear();
-                mCanvasAnchor.getChildren().add(imageView);
+                //ImageView imageView = new ImageView();
+                //imageView.setImage(SwingFXUtils.toFXImage(mapTask.getValue(), null));
+                //mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+                mCanvasAnchor.getChildren().add(mapTask.getValue());
                 mGenerateButton.setDisable(false);
+                mLoadingCircle.setVisible(false);
                 mSeedEdited = false;
+                //setupCache(3);
+                //setZoom();
+
+                if (mTerritoryGenCheckBox.isSelected()) {
+                    mPoliticalMapCheckBox.setDisable(false);
+                } else {
+                    mPoliticalMapCheckBox.setDisable(true);
+                }
             }
         });
     }
+
+    // Cache n maps to be generated in a background thread
+    /*private void setupCache(int n) {
+
+        verifyFields();
+
+        // run map generation cache in a background thread
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        MapTask mapTask = new MapTask();
+        executor.execute(mapTask);
+
+        mapTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
+                new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                mMapImageCache.add(mapTask.getValue());
+                if (n - 1 > 0) {
+                    setupCache(n - 1);
+                }
+            }
+        });
+    }*/
 
     private void verifyFields() {
         if (!mWidthTextField.getText().matches("^-?\\d+$")) {
@@ -349,6 +403,10 @@ public class UiController {
         if (!isDouble(mMountainGenTextField.getText())) {
             mMountainGenTextField.setText(String.valueOf(MOUNTAINGEN));
         }
+        if (!mCityGenTextField.getText().matches("^-?\\d+$")) {
+            mCityGenTextField.setText(String.valueOf(CITYGEN));
+        }
+        mPoliticalMapCheckBox.setSelected(false);
     }
 
     private double determineSeed() {
@@ -372,7 +430,7 @@ public class UiController {
         }
     }
 
-    private class MapTask extends Task<BufferedImage> {
+    private class MapTask extends Task<ImageView> {
 
         private PerlinMap map;
 
@@ -387,6 +445,7 @@ public class UiController {
                     Double.parseDouble(mHillGenTextField.getText()),
                     BEACHGEN,
                     FORESTGEN,
+                    Integer.parseInt(mCityGenTextField.getText()),
                     Double.parseDouble(mPersistenceField.getText()),
                     Integer.parseInt(mOctavesField.getText()),
                     mLandGenCheckBox.isSelected(),
@@ -394,16 +453,20 @@ public class UiController {
                     mMountainGenCheckBox.isSelected(),
                     mRiverGenCheckBox.isSelected(),
                     mCityGenCheckBox.isSelected(),
-                    mNameGenCheckBox.isSelected());
+                    mNameGenCheckBox.isSelected(),
+                    mTerritoryGenCheckBox.isSelected());
         }
 
         @Override
-        protected BufferedImage call() {
+        protected ImageView call() {
             try {
-                mSuperman = new Superman(map);
-                mSuperman.generateImage();
-                mImage = mSuperman.getImage();
-                return mImage;
+                mImageManager = new ImageManager(map);
+                mImageManager.generateImage();
+                mImage = mImageManager.getImage();
+                ImageView imageView = new ImageView();
+                imageView.setImage(SwingFXUtils.toFXImage(mImage, null));
+                imageView.setId("mapImage");
+                return imageView;
             } catch (Exception e) {
                 Logger.getLogger(TAG).log(Level.SEVERE, "test", e);
             }

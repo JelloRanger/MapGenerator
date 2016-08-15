@@ -1,6 +1,9 @@
 package image;
 
 import map.Map;
+import map.PerlinMap;
+import metrics.Metric;
+import metrics.MetricKey;
 import model.LocationType;
 import model.Terrain;
 import model.TerrainType;
@@ -12,9 +15,9 @@ import java.awt.image.WritableRaster;
 
 import static java.lang.StrictMath.abs;
 
-public class Superman {
+public class ImageManager {
 
-    protected Map mMap;
+    protected PerlinMap mMap;
 
     protected BufferedImage mImage;
 
@@ -22,7 +25,7 @@ public class Superman {
 
     protected final int OVAL_HEIGHT = 5;
 
-    public Superman(Map map) {
+    public ImageManager(PerlinMap map) {
         mMap = map;
         mImage = new BufferedImage(mMap.getWidth(), mMap.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
     }
@@ -48,7 +51,11 @@ public class Superman {
             }
         }
 
-        shadeMap();
+        if (mMap.getPersistence() < 0.8 && mMap.getPersistence() > 0.4) {
+            shadeMap();
+        } else {
+            shadeMapWithoutSlopeDiff();
+        }
 
         if (mMap.isCitiesEnabled()) {
             colorCities();
@@ -59,7 +66,25 @@ public class Superman {
         }
     }
 
+    private void shadeMapWithoutSlopeDiff() {
+        Metric.start(MetricKey.SHADEMAP);
+        BufferedImage copyImage = deepCopy(mImage);
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                Terrain terrain = mMap.getTerrain(x, y);
+                double slope = mMap.getNoise().getGrid().getSlope(terrain);
+                if (slope < 0) {
+                    mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.white, 8).getRGB());
+                } else if (slope > 0) {
+                    mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.black, 8).getRGB());
+                }
+            }
+        }
+        Metric.record(MetricKey.SHADEMAP);
+    }
+
     private void shadeMap() {
+        Metric.start(MetricKey.SHADEMAP);
         BufferedImage copyImage = deepCopy(mImage);
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
@@ -67,13 +92,14 @@ public class Superman {
                 double slope = mMap.getNoise().getGrid().getSlope(terrain);
                 if (slope < 0) {
                     mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.white,
-                            (int) (4 * abs(slope) * 50)).getRGB());
+                            (int) (8 * abs(slope) * 50)).getRGB());
                 } else if (slope > 0) {
                     mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.black,
-                            (int) (4 * (slope) * 50)).getRGB());
+                            (int) (8 * (slope) * 50)).getRGB());
                 }
             }
         }
+        Metric.record(MetricKey.SHADEMAP);
     }
 
     private BufferedImage deepCopy(BufferedImage bufferedImage) {
@@ -88,6 +114,19 @@ public class Superman {
         int red = (int) (color1.getRed() * (1 - factor) + color2.getRed() * factor);
         int green = (int) (color1.getGreen() * (1 - factor) + color2.getGreen() * factor);
         int blue = (int) (color1.getBlue() * (1 - factor) + color2.getBlue() * factor);
+
+        if (red > 255)
+            red = 255;
+        if (green > 255)
+            green = 255;
+        if (blue > 255)
+            blue = 255;
+        if (red < 0)
+            red = 0;
+        if (green < 0)
+            green = 0;
+        if (blue < 0)
+            blue = 0;
         return new Color(red, green, blue);
     }
 

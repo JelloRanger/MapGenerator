@@ -24,6 +24,8 @@ public abstract class Map {
 
 	protected double mForestGen;
 
+    protected int mCityGen;
+
 	protected Noise mNoise;
 
 	protected Noise mForestNoise;
@@ -39,6 +41,8 @@ public abstract class Map {
 	protected boolean mCitiesEnabled = true;
 
 	protected boolean mNamesEnabled = true;
+
+	protected boolean mTerritoriesEnabled = true;
 
 	public abstract void generateMap();
 	
@@ -76,6 +80,10 @@ public abstract class Map {
 
 	public boolean isNamesEnabled() {
 		return mNamesEnabled;
+	}
+
+	public boolean isTerritoriesEnabled() {
+		return mTerritoriesEnabled;
 	}
 
 	public abstract Terrain getTerrain(int x, int y);
