@@ -42,6 +42,8 @@ public abstract class Map {
 
 	protected boolean mNamesEnabled = true;
 
+	protected boolean mContinentsEnabled = true;
+
 	protected boolean mTerritoriesEnabled = true;
 
 	public abstract void generateMap();
@@ -58,7 +60,51 @@ public abstract class Map {
 		return mNoise;
 	}
 
-	public boolean isLandEnabled() {
+    public double getSeed() {
+        return mSeed;
+    }
+
+    public double getSeedForest() {
+        return mSeedForest;
+    }
+
+    public double getLandGen() {
+        return mLandGen;
+    }
+
+    public double getWaterGen() {
+        return mWaterGen;
+    }
+
+    public double getMountainGen() {
+        return mMountainGen;
+    }
+
+    public double getHillGen() {
+        return mHillGen;
+    }
+
+    public double getBeachGen() {
+        return mBeachGen;
+    }
+
+    public double getForestGen() {
+        return mForestGen;
+    }
+
+    public int getCityGen() {
+        return mCityGen;
+    }
+
+    public Noise getForestNoise() {
+        return mForestNoise;
+    }
+
+    public boolean isContinentsEnabled() {
+        return mContinentsEnabled;
+    }
+
+    public boolean isLandEnabled() {
 		return mLandEnabled;
 	}
 

@@ -6,10 +6,7 @@ import model.LocationType;
 import model.Terrain;
 import model.TerrainType;
 import noise.PerlinNoise;
-import procedural.CityGeneration;
-import procedural.LakesAndRiversGeneration;
-import procedural.NameGeneration;
-import procedural.TerritoryGeneration;
+import procedural.*;
 
 public class PerlinMap extends RandomMap {
 
@@ -50,6 +47,7 @@ public class PerlinMap extends RandomMap {
                      boolean riversEnabled,
                      boolean citiesEnabled,
                      boolean namesEnabled,
+                     boolean continentsEnabled,
                      boolean territoriesEnabled) {
         super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen, cityGen);
         mPersistence = persistence;
@@ -60,6 +58,7 @@ public class PerlinMap extends RandomMap {
         mRiversEnabled = riversEnabled;
         mCitiesEnabled = citiesEnabled;
         mNamesEnabled = namesEnabled;
+        mContinentsEnabled = continentsEnabled;
         mTerritoriesEnabled = territoriesEnabled;
     }
 
@@ -67,6 +66,10 @@ public class PerlinMap extends RandomMap {
     public void generateMap() {
         mNoise = new PerlinNoise(mWidth, mHeight, mSeed, mPersistence, mOctaves);
         mNoise.initializeMapGrid();
+
+        if (mContinentsEnabled) {
+            generateContinents();
+        }
 
         //generateForests();
 
@@ -116,6 +119,13 @@ public class PerlinMap extends RandomMap {
     protected void generateForests() {
         mForestNoise = new PerlinNoise(mWidth, mHeight, mSeedForest, mPersistence, 6);
         mForestNoise.initializeMapGrid();
+    }
+
+    protected void generateContinents() {
+        Metric.start(MetricKey.CONTINENTGENERATION);
+        ContinentGeneration continentGeneration = new ContinentGeneration(this);
+        continentGeneration.generate();
+        Metric.record(MetricKey.CONTINENTGENERATION);
     }
 
     protected void generateLakesAndRivers() {

@@ -13,7 +13,7 @@ public abstract class Noise {
 	protected double mSeed;
 	
 	public abstract void initializeNoiseGrid();
-	
+
 	public abstract void initializeMapGrid();
 	
 	protected abstract void genNoise();

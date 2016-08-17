@@ -116,6 +116,9 @@ public class UiController {
     private CheckBox mNameGenCheckBox;
 
     @FXML
+    private CheckBox mContinentGenCheckBox;
+
+    @FXML
     private CheckBox mTerritoryGenCheckBox;
 
     @FXML
@@ -454,6 +457,7 @@ public class UiController {
                     mRiverGenCheckBox.isSelected(),
                     mCityGenCheckBox.isSelected(),
                     mNameGenCheckBox.isSelected(),
+                    mContinentGenCheckBox.isSelected(),
                     mTerritoryGenCheckBox.isSelected());
         }
 

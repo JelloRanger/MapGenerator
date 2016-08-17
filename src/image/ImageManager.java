@@ -1,6 +1,5 @@
 package image;
 
-import map.Map;
 import map.PerlinMap;
 import metrics.Metric;
 import metrics.MetricKey;
@@ -52,7 +51,7 @@ public class ImageManager {
         }
 
         if (mMap.getPersistence() < 0.8 && mMap.getPersistence() > 0.4) {
-            shadeMap();
+            shadeMap(false);
         } else {
             shadeMapWithoutSlopeDiff();
         }
@@ -83,12 +82,17 @@ public class ImageManager {
         Metric.record(MetricKey.SHADEMAP);
     }
 
-    private void shadeMap() {
+    private void shadeMap(boolean ignoreWater) {
         Metric.start(MetricKey.SHADEMAP);
         BufferedImage copyImage = deepCopy(mImage);
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 Terrain terrain = mMap.getTerrain(x, y);
+
+                if (ignoreWater && terrain.getTerrainType().equals(TerrainType.WATER)) {
+                    continue;
+                }
+
                 double slope = mMap.getNoise().getGrid().getSlope(terrain);
                 if (slope < 0) {
                     mImage.setRGB(x, y, mixColorsWithAlpha(new Color(copyImage.getRGB(x, y)), Color.white,
@@ -133,7 +137,7 @@ public class ImageManager {
     public void colorPoliticalMap() {
         colorCountries();
 
-        shadeMap();
+        shadeMap(true);
 
         // Color cities and names, if enabled, on top of countries
         if (mMap.isCitiesEnabled()) {
@@ -175,6 +179,12 @@ public class ImageManager {
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 Terrain terrain = mMap.getTerrain(x, y);
+                if (terrain.getTerrainType().equals(TerrainType.WATER) ||
+                        terrain.getTerrainType().equals(TerrainType.RIVER) ||
+                        terrain.getTerrainType().equals(TerrainType.RIVER_BANK) ||
+                        terrain.getTerrainType().equals(TerrainType.BEACH)) {
+                    continue;
+                }
                 int territoryMod = terrain.getTerritory() % 6;
                 switch (territoryMod) {
                     case 0:
