@@ -5,13 +5,17 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -20,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import map.PerlinMap;
+import model.Point;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -159,6 +164,13 @@ public class UiController {
 
     private static final int OCTAVES = 8;
 
+
+
+    private static final int MIN_PIXELS = 100;
+
+
+
+
     public void initialize() {
 
         mMenuClose.setOnAction(this::handleMenuClose);
@@ -191,11 +203,12 @@ public class UiController {
 
     private void setZoom() {
         ImageView imageView = new ImageView();
-        DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
+        DoubleProperty zoomProperty = new SimpleDoubleProperty(300);
 
         zoomProperty.addListener(new InvalidationListener() {
             @Override
             public void invalidated(Observable observable) {
+                System.out.println("invalidated");
                 imageView.setFitWidth(zoomProperty.get() * 4);
                 imageView.setFitHeight(zoomProperty.get() * 3);
             }
@@ -204,6 +217,7 @@ public class UiController {
         mCanvasAnchor.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent event) {
+                System.out.println("scroll scroll");
                 if (event.getDeltaY() > 0) {
                     zoomProperty.set(zoomProperty.get() * 1.1);
                 } else if (event.getDeltaY() < 0) {
@@ -212,9 +226,8 @@ public class UiController {
             }
         });
 
-        WritableImage writableImage = new WritableImage(mImage.getWidth(),
-                mImage.getHeight());
-        //SwingFXUtils.toFXImage(mImage, writableImage);
+        WritableImage writableImage = new WritableImage(mImage.getWidth(), mImage.getHeight());
+        writableImage = SwingFXUtils.toFXImage(mImage, writableImage);
 
         imageView.setImage(writableImage);
         imageView.setId("mapImage");
@@ -222,9 +235,164 @@ public class UiController {
 
 
         mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+        System.out.println("wtf");
         mCanvasAnchor.getChildren().add(imageView);
 
         //mCanvasAnchor.setContent(imageView);
+    }
+
+    private void setZoom2() {
+        WritableImage writableImage = new WritableImage(mImage.getWidth(), mImage.getHeight());
+        writableImage = SwingFXUtils.toFXImage(mImage, writableImage);
+        double width = writableImage.getWidth();
+        double height = writableImage.getHeight();
+
+        ImageView imageView = new ImageView(writableImage);
+        imageView.setPreserveRatio(true);
+
+        // ===== my stuff =====
+        DoubleProperty zoomProperty = new SimpleDoubleProperty(300);
+        imageView.setId("mapImage");
+
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+        System.out.println("wtf");
+        mCanvasAnchor.getChildren().add(imageView);
+
+
+        zoomProperty.addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                System.out.println("invalidated");
+                imageView.setFitWidth(zoomProperty.get() * 4);
+                imageView.setFitHeight(zoomProperty.get() * 4);
+            }
+        });
+
+        // ===== end my stuff =====
+
+        reset(imageView, writableImage.getWidth(), writableImage.getHeight());
+
+        ObjectProperty<Point2D> mouseDown = new SimpleObjectProperty<>();
+
+        imageView.setOnMousePressed(e -> {
+            Point2D mousePress = imageViewToImage(imageView, new Point2D(e.getX(), e.getY()));
+            mouseDown.set(mousePress);
+        });
+
+        imageView.setOnMouseDragged(e -> {
+
+            if (imageView.getFitWidth() < 1000 || imageView.getFitHeight() < 1000) {
+                return;
+            }
+
+            Point2D dragPoint = imageViewToImage(imageView, new Point2D(e.getX(), e.getY()));
+            shift(imageView, dragPoint.subtract(mouseDown.get()), zoomProperty);
+            mouseDown.set(imageViewToImage(imageView, new Point2D(e.getX(), e.getY())));
+        });
+
+        imageView.setOnScroll(e -> {
+            double delta = e.getDeltaY();
+            Rectangle2D viewport = imageView.getViewport();
+
+            double scale = clamp(Math.pow(1.01, delta),
+
+                    // don't scale so we're zoomed in fewer thjan MIN_PIXELS in any direction
+                    Math.min(MIN_PIXELS / viewport.getWidth(), MIN_PIXELS / viewport.getHeight()),
+
+                    // don't scale so that we're bigger than image dimensions
+                    Math.max(width / viewport.getWidth(), height / viewport.getHeight()));
+
+
+            if (scale == 1.0 || viewport.getWidth() == 1000 && viewport.getHeight() == 1000) {
+
+                if (e.getDeltaY() > 0) {
+                    zoomProperty.set(zoomProperty.get() * 1.1);
+                } else if (e.getDeltaY() < 0) {
+                    zoomProperty.set(zoomProperty.get() / 1.1);
+                }
+                return;
+            }
+
+            Point2D mouse = imageViewToImage(imageView, new Point2D(e.getX(), e.getY()));
+
+            double newWidth = viewport.getWidth() * scale;
+            double newHeight = viewport.getHeight() * scale;
+
+            // To keep the visual point under the mouse from moving, we need
+            // (x - newViewportMinX) / (x - currentViewportMinX) = scale
+            // where x is the mouse X coordinate int he image
+
+            // solving this for newViewportMinX gives
+
+            // newViewportMinX = x - (x - currentViewportMinX) * scale
+
+            // we then clamp this value so the image never scrolls out of the imageView
+
+            double newMinX = clamp(mouse.getX() - (mouse.getX() - viewport.getMinX()) * scale, 0, width - newWidth);
+            double newMinY = clamp(mouse.getY() - (mouse.getY() - viewport.getMinY()) * scale, 0, height - newHeight);
+
+            imageView.setViewport(new Rectangle2D(newMinX, newMinY, newWidth, newHeight));
+        });
+
+        /*imageView.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                reset(imageView, width, height);
+            }
+        });*/
+    }
+
+    // reset to the top left
+    private void reset(ImageView imageView, double width, double height) {
+        imageView.setViewport(new Rectangle2D(0, 0, width, height));
+    }
+
+    // shift the viewport of the imageView by the specified delta,
+    // clamping so the viewport does not move off the actual image
+    private void shift(ImageView imageView, Point2D delta, DoubleProperty zoomProperty) {
+        Rectangle2D viewport = imageView.getViewport();
+
+        /*double width = zoomProperty.get() * 4;//imageView.getImage().getWidth();
+        double height = zoomProperty.get() * 4;//imageView.getImage().getHeight();
+
+        System.out.println("width: " + width);
+        System.out.println("height: " + height);*/
+
+        double maxX = imageView.getImage().getWidth()/*zoomProperty.get() * 4*/ - viewport.getWidth();//width - viewport.getWidth();
+        double maxY = imageView.getFitHeight()/*zoomProperty.get() * 4*/ - viewport.getHeight();//height - viewport.getHeight();
+
+        System.out.println("viewport.getWidth(): " + viewport.getWidth());
+        System.out.println("viewport.getHeight(): " + viewport.getHeight());
+
+        System.out.println("viewport.getMinX(): " + viewport.getMinX());
+        System.out.println("viewport.getMinY(): " + viewport.getMinY());
+
+        double minX = clamp(viewport.getMinX() - delta.getX(), 0, maxX);
+        double minY = clamp(viewport.getMinY() - delta.getY(), 0, maxY);
+
+        imageView.setViewport(new Rectangle2D(minX, minY,
+                viewport.getWidth(),
+                viewport.getHeight()));
+    }
+
+    private double clamp(double value, double min, double max) {
+        if (value < min) {
+            return min;
+        }
+        else if (value > max) {
+            return max;
+        }
+        return value;
+    }
+
+    // convert mouse coordinates in the imageView to coordinates in the actual image
+    private Point2D imageViewToImage(ImageView imageView, Point2D imageViewCoordinates) {
+        double xProportion = imageViewCoordinates.getX() / imageView.getBoundsInLocal().getWidth();
+        double yProportion = imageViewCoordinates.getY() / imageView.getBoundsInLocal().getHeight();
+
+        Rectangle2D viewport = imageView.getViewport();
+        return new Point2D(
+                viewport.getMinX() + xProportion * viewport.getWidth(),
+                viewport.getMinY() + yProportion * viewport.getHeight());
     }
 
     public void setStageAndSetupListeners(Stage stage) {
@@ -238,7 +406,6 @@ public class UiController {
 
     private void handleGenerateButtonAction(ActionEvent event) {
         generateMap();
-        //setZoom();
     }
 
     // Default buttons
@@ -358,6 +525,8 @@ public class UiController {
                 } else {
                     mPoliticalMapCheckBox.setDisable(true);
                 }
+
+                setZoom2();
             }
         });
     }
