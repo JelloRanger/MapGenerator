@@ -1,6 +1,8 @@
 package controller;
 
+import image.AnimatedZoomOperator;
 import image.ImageManager;
+import image.ZoomManager;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -24,7 +26,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import map.PerlinMap;
-import model.Point;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -241,6 +242,30 @@ public class UiController {
         //mCanvasAnchor.setContent(imageView);
     }
 
+    private void setZoom4() {
+        AnimatedZoomOperator zoomOperator = new AnimatedZoomOperator();
+
+        mCanvasAnchor.setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent event) {
+                double zoomFactor = 1.5;
+                if (event.getDeltaY() <= 0) {
+                    // zoom out
+                    zoomFactor = 1 / zoomFactor;
+                }
+                zoomOperator.zoom(mCanvasAnchor, zoomFactor, event.getSceneX(), event.getSceneY());
+            }
+        });
+    }
+
+    private void setZoom3() {
+        ZoomManager zoomManager = new ZoomManager(mImage);
+        ImageView imageView = zoomManager.startZoom();
+        imageView.setId("mapImage");
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+        mCanvasAnchor.getChildren().add(imageView);
+    }
+
     private void setZoom2() {
         WritableImage writableImage = new WritableImage(mImage.getWidth(), mImage.getHeight());
         writableImage = SwingFXUtils.toFXImage(mImage, writableImage);
@@ -357,7 +382,7 @@ public class UiController {
         System.out.println("width: " + width);
         System.out.println("height: " + height);*/
 
-        double maxX = imageView.getImage().getWidth()/*zoomProperty.get() * 4*/ - viewport.getWidth();//width - viewport.getWidth();
+        double maxX = imageView.getFitWidth()/*zoomProperty.get() * 4*/ - viewport.getWidth();//width - viewport.getWidth();
         double maxY = imageView.getFitHeight()/*zoomProperty.get() * 4*/ - viewport.getHeight();//height - viewport.getHeight();
 
         System.out.println("viewport.getWidth(): " + viewport.getWidth());
@@ -365,6 +390,8 @@ public class UiController {
 
         System.out.println("viewport.getMinX(): " + viewport.getMinX());
         System.out.println("viewport.getMinY(): " + viewport.getMinY());
+
+        imageView.getTranslateX();
 
         double minX = clamp(viewport.getMinX() - delta.getX(), 0, maxX);
         double minY = clamp(viewport.getMinY() - delta.getY(), 0, maxY);
@@ -526,7 +553,7 @@ public class UiController {
                     mPoliticalMapCheckBox.setDisable(true);
                 }
 
-                setZoom2();
+                setZoom3();
             }
         });
     }
