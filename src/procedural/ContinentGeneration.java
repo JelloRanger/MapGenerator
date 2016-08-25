@@ -1,7 +1,7 @@
 package procedural;
 
 import map.Map;
-import noise.ContinentNoise;
+import noise.SphericalNoise;
 
 /**
  * Modifies the map to have continental landmasses. This is done by combining elevations from the map with continent
@@ -13,21 +13,21 @@ public class ContinentGeneration {
 
     private Map mMap;
 
-    private ContinentNoise mContinentNoise;
+    private SphericalNoise mSphericalNoise;
 
     public ContinentGeneration(Map map) {
         mMap = map;
     }
 
     public void generate() {
-        mContinentNoise = new ContinentNoise(mMap.getWidth(), mMap.getHeight());
-        mContinentNoise.initializeNoiseGrid();
+        mSphericalNoise = new SphericalNoise(mMap.getWidth(), mMap.getHeight());
+        mSphericalNoise.initializeNoiseGrid();
 
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 double elevation = mMap.getNoise().getGrid().getPoint(x, y).getElevation();
                 mMap.getNoise().getGrid().getPoint(x, y).setElevation(
-                        elevation + mContinentNoise.getGrid().getPoint(x, y).getElevation());
+                        elevation + mSphericalNoise.getGrid().getPoint(x, y).getElevation());
             }
         }
     }

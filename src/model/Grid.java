@@ -88,6 +88,93 @@ public class Grid {
         return adjacentTerrain;
     }
 
+	// direction is -1 for left, 1 for right
+	public List<Terrain> getAdjacentTerrainByDirection(int x, int y, int degrees, int dir) {
+		List<Terrain> adjacentTerrain = new ArrayList<>();
+
+		// left
+		if (dir == -1) {
+			for (int dy = -15; dy <= 15; dy++) {
+				for (int dx = degrees * -1; dx <= 0; dx++) {
+					if ((dx != 0 || dy != 0) &&
+							x + dx >= 0 && x + dx < width &&
+							y + dy >= 0 && y + dy < height) {
+						adjacentTerrain.add((Terrain) grid.get(y + dy).get(x + dx));
+					}
+				}
+			}
+		}
+
+		else if (dir == 1) {
+			for (int dy = -15; dy <= 15; dy++) {
+				for (int dx = 0; dx <= degrees; dx++) {
+					if ((dx != 0 || dy != 0) &&
+							x + dx >= 0 && x + dx < width &&
+							y + dy >= 0 && y + dy < height) {
+						adjacentTerrain.add((Terrain) grid.get(y + dy).get(x + dx));
+					}
+				}
+			}
+		}
+
+		return adjacentTerrain;
+	}
+
+	public List<Terrain> getAdjacentTerrainByDirAndStrength(int x, int y, int degrees, double strength) {
+		List<Terrain> adjacentTerrain = new ArrayList<>();
+
+        // left
+        if (strength <= 0) {
+
+            strength *= -1;
+            int startPos = -1 * ((int) (strength * degrees + ((1 - strength) / 2 * degrees)));
+            int endPos = startPos + degrees;
+
+            for (int dy = -5; dy <= 5; dy++) {
+                List<Terrain> adjacentTerrainForThisRow = new ArrayList<>();
+                for (int dx = endPos; dx >= startPos; dx--) {
+                    if ((dx != 0 || dy != 0) &&
+                            x + dx >= 0 && x + dx < width &&
+                            y + dy >= 0 && y + dy < height) {
+                        if (((Terrain) grid.get(y + dy).get(x + dx)).getTerrainType().equals(TerrainType.MOUNTAIN) &&
+                                dx <= 0) {
+                            adjacentTerrainForThisRow.clear();
+                            continue;
+                        }
+                        adjacentTerrainForThisRow.add((Terrain) grid.get(y + dy).get(x + dx));
+                    }
+                }
+                adjacentTerrain.addAll(adjacentTerrainForThisRow);
+            }
+        }
+
+        // right
+        else if (strength > 0) {
+
+            int endPos = ((int) (strength * degrees + ((1 - strength / 2 * degrees))));
+            int startPos = endPos - degrees;
+
+            for (int dy = -5; dy <= 5; dy++) {
+                List<Terrain> adjacentTerrainForThisRow = new ArrayList<>();
+                for (int dx = startPos; dx <= endPos; dx++) {
+                    if ((dx != 0 || dy != 0) &&
+                            x + dx >= 0 && x + dx < width &&
+                            y + dy >= 0 && y + dy < height) {
+                        if (((Terrain) grid.get(y + dy).get(x + dx)).getTerrainType().equals(TerrainType.MOUNTAIN) &&
+                                dx >= 0) {
+                            adjacentTerrainForThisRow.clear();
+                            continue;
+                        }
+                        adjacentTerrainForThisRow.add((Terrain) grid.get(y + dy).get(x + dx));
+                    }
+                }
+                adjacentTerrain.addAll(adjacentTerrainForThisRow);
+            }
+        }
+
+        return adjacentTerrain;
+	}
+
 	public double getSlope(Point point) {
 		return getSlope(point.getX(), point.getY());
 	}

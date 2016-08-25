@@ -4,6 +4,8 @@ public class Terrain extends Point {
 
 	protected TerrainType terrainType;
 
+    protected BiomeType biomeType;
+
     protected LocationType locationType;
 
     protected Location location;
@@ -11,6 +13,10 @@ public class Terrain extends Point {
     protected double score;
 
     protected int territory;
+
+    protected double temperature;
+
+    protected double humidity;
 	
 	public Terrain(int x, int y) {
 		super(x, y);
@@ -21,6 +27,10 @@ public class Terrain extends Point {
 	public void setTerrainType(TerrainType terrainType) {
 		this.terrainType = terrainType;
 	}
+
+    public void setBiomeType(BiomeType biomeType) {
+        this.biomeType = biomeType;
+    }
 
     public void setLocationType(LocationType locationType) {
         this.locationType = locationType;
@@ -38,9 +48,21 @@ public class Terrain extends Point {
         territory = num;
     }
 
+    public void setTemperature(double temp) {
+        temperature = temp;
+    }
+
+    public void setHumidity(double humidity) {
+        this.humidity = humidity;
+    }
+
 	public TerrainType getTerrainType() {
 		return terrainType;
 	}
+
+    public BiomeType getBiomeType() {
+        return biomeType;
+    }
 
     public LocationType getLocationType() {
         return locationType;
@@ -56,5 +78,13 @@ public class Terrain extends Point {
 
     public int getTerritory() {
         return territory;
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public double getHumidity() {
+        return humidity;
     }
 }

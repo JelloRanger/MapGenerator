@@ -96,6 +96,8 @@ public class PerlinMap extends RandomMap {
         if (mCitiesEnabled && mTerritoriesEnabled) {
             generateTerritories();
         }
+
+        generateBiomes();
     }
 
     @Override
@@ -119,6 +121,21 @@ public class PerlinMap extends RandomMap {
     protected void generateForests() {
         mForestNoise = new PerlinNoise(mWidth, mHeight, mSeedForest, mPersistence, 6);
         mForestNoise.initializeMapGrid();
+    }
+
+    protected void generateTemperature() {
+        TemperatureGeneration temperatureGeneration = new TemperatureGeneration(this);
+        temperatureGeneration.generate();
+    }
+
+    protected void generateHumidity() {
+        HumidityGeneration humidityGeneration = new HumidityGeneration(this);
+        humidityGeneration.generate();
+    }
+
+    protected void generateBiomes() {
+        BiomeGeneration biomeGeneration = new BiomeGeneration(this);
+        biomeGeneration.generate();
     }
 
     protected void generateContinents() {

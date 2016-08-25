@@ -3,9 +3,10 @@ package procedural;
 import map.Map;
 import model.LocationType;
 import model.Terrain;
-import model.TerrainType;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TerritoryGeneration {
 

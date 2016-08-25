@@ -95,7 +95,6 @@ public class CityGeneration {
             }
 
             Terrain city = mMap.getTerrain(location.getX(), location.getY());
-            //System.out.println(city.getX() + ", " + city.getY() + " " + city.getTerrainType());
             city.setLocationType(LocationType.CITY);
             city.setLocation(new City());
             citiesPlaced.add(city);

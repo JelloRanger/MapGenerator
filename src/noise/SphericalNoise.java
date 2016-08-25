@@ -9,18 +9,18 @@ import java.util.List;
  * Generates an N x N grid where points closer to the edges have lower elevations and points closer to the center have
  * higher elevations
  */
-public class ContinentNoise extends Noise {
+public class SphericalNoise extends Noise {
 
     private final double MIN_ELEVATION = -1.0;
 
-    private final double MAX_ELEVATION = 1.0;
+    private final double MAX_ELEVATION = 0.5;
 
     private int mMaxDistance;
 
-    public ContinentNoise(int width, int height) {
+    public SphericalNoise(int width, int height) {
         mWidth = width;
         mHeight = height;
-        mMaxDistance = mWidth / 2 < mHeight / 2 ? mWidth / 2 - 1: mHeight / 2;
+        mMaxDistance = mWidth / 2 < mHeight / 2 ? mWidth / 2 - 1 : mHeight / 2 - 1;
     }
 
     @Override
@@ -46,12 +46,16 @@ public class ContinentNoise extends Noise {
         }
     }
 
-    private double determineElevation(int x, int y) {
-        int distX = getDistanceFromEdgeX(x);
-        int distY = getDistanceFromEdgeY(y);
-        int minDistFromEdge = distX < distY ? distX : distY;
+    protected double determineElevation(int x, int y) {
+        int minDistFromEdge = minDistanceFromEdge(x, y);
 
         return (MAX_ELEVATION - MIN_ELEVATION) * minDistFromEdge / mMaxDistance + MIN_ELEVATION;
+    }
+
+    protected int minDistanceFromEdge(int x, int y) {
+        int distX = getDistanceFromEdgeX(x);
+        int distY = getDistanceFromEdgeY(y);
+        return distX < distY ? distX : distY;
     }
 
     private int getDistanceFromEdgeX(int x) {

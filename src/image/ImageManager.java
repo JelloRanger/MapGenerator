@@ -3,9 +3,11 @@ package image;
 import map.PerlinMap;
 import metrics.Metric;
 import metrics.MetricKey;
+import model.BiomeType;
 import model.LocationType;
 import model.Terrain;
 import model.TerrainType;
+import procedural.WindCurrents;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -37,10 +39,43 @@ public class ImageManager {
         return mImage;
     }
     
-    private void initializeMap() {
+    protected void initializeMap() {
         mMap.generateMap();
-        colorTerrain();
+        //colorTerrain();
+        colorBiomes();
+    }
 
+    public void colorBiomes() {
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                Terrain terrain = mMap.getTerrain(x, y);
+                if (terrain.getTerrainType().equals(TerrainType.WATER) ||
+                        terrain.getTerrainType().equals(TerrainType.RIVER) ||
+                        terrain.getTerrainType().equals(TerrainType.BEACH) ||
+                        terrain.getTerrainType().equals(TerrainType.RIVER_BANK) ||
+                        terrain.getTerrainType().equals(TerrainType.MOUNTAIN)) {
+                    mImage.setRGB(x, y, getColorByTerrain(terrain).getRGB());
+                } else {
+                    mImage.setRGB(x, y, getColorByBiome(terrain).getRGB());
+                }
+            }
+        }
+
+        if (mMap.getPersistence() < 0.8 && mMap.getPersistence() > 0.4) {
+            shadeMap(false);
+        } else {
+            shadeMapWithoutSlopeDiff();
+        }
+
+        drawWindCurrents();
+
+        if (mMap.isCitiesEnabled()) {
+            colorCities();
+        }
+
+        if (mMap.isCitiesEnabled() && mMap.isNamesEnabled()) {
+            colorNames();
+        }
     }
 
     public void colorTerrain() {
@@ -113,7 +148,7 @@ public class ImageManager {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
-    private Color mixColorsWithAlpha(Color color1, Color color2, int alpha) {
+    protected Color mixColorsWithAlpha(Color color1, Color color2, int alpha) {
         float factor = alpha / 255f;
         int red = (int) (color1.getRed() * (1 - factor) + color2.getRed() * factor);
         int green = (int) (color1.getGreen() * (1 - factor) + color2.getGreen() * factor);
@@ -216,7 +251,7 @@ public class ImageManager {
         }
     }
     
-    private Color getColorByTerrain(Terrain terrain) {
+    protected Color getColorByTerrain(Terrain terrain) {
         TerrainType terrainType = terrain.getTerrainType();
         double elevation = terrain.getElevation();
         double percent = (elevation + 1) / 2;
@@ -274,6 +309,44 @@ public class ImageManager {
         return terrainColor;
     }
 
+    protected Color getColorByBiome(Terrain terrain) {
+        BiomeType biomeType = terrain.getBiomeType();
+
+        Color biomeColor;
+        switch (biomeType) {
+            case TROPICALRAINFOREST:
+                biomeColor = Color.green.darker();
+                break;
+            case SAVANNA:
+                biomeColor = Color.yellow.darker();
+                break;
+            case SUBTROPICALDESERT:
+                biomeColor = Color.orange.darker();
+                break;
+            case TEMPERATERAINFOREST:
+                biomeColor = Color.green;
+                break;
+            case TEMPERATESEASONALFOREST:
+                biomeColor = Color.pink;
+                break;
+            case SHRUBLAND:
+                biomeColor = Color.yellow;
+                break;
+            case COLDDESERT:
+                biomeColor = Color.orange;
+                break;
+            case BOREALFOREST:
+                biomeColor = Color.cyan.darker();
+                break;
+            case TUNDRA:
+            default:
+                biomeColor = Color.white;
+                break;
+        }
+
+        return biomeColor;
+    }
+
     protected Color averageColors(Color color1, Color color2, double percent) {
         double red = color1.getRed() * percent + color2.getRed() * (1.0 - percent);
         double green = color1.getGreen() * percent + color2.getGreen() * (1.0 - percent);
@@ -290,5 +363,60 @@ public class ImageManager {
         }
 
         return Color.white;
+    }
+
+    private void drawWindCurrents() {
+
+        WindCurrents windCurrents = new WindCurrents(mMap.getHeight());
+        for (int y = 0; y < 12; y++) {
+            for (int x = 0; x < 4; x++) {
+                if (windCurrents.getDirection(y * mImage.getHeight()/12) < 0) {
+                    Graphics g = mImage.getGraphics();
+                    g.setColor(Color.red);
+                    drawArrowLine(g,
+                            x * mImage.getWidth() / 4 + 100, y * mImage.getHeight() / 12,
+                            x * mImage.getWidth() / 4, y * mImage.getHeight() / 12,
+                            50, 10);
+                } else {
+                    Graphics g = mImage.getGraphics();
+                    g.setColor(Color.magenta);
+                    drawArrowLine(g,
+                            x * mImage.getWidth() / 4, y * mImage.getHeight() / 12,
+                            x * mImage.getWidth() / 4 + 100, y * mImage.getHeight() / 12,
+                            50, 10);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draw an arrow line betwwen two point
+     * @param g the graphic component
+     * @param x1 x-position of first point
+     * @param y1 y-position of first point
+     * @param x2 x-position of second point
+     * @param y2 y-position of second point
+     * @param d  the width of the arrow
+     * @param h  the height of the arrow
+     */
+    private void drawArrowLine(Graphics g, int x1, int y1, int x2, int y2, int d, int h){
+        int dx = x2 - x1, dy = y2 - y1;
+        double D = Math.sqrt(dx*dx + dy*dy);
+        double xm = D - d, xn = xm, ym = h, yn = -h, x;
+        double sin = dy/D, cos = dx/D;
+
+        x = xm*cos - ym*sin + x1;
+        ym = xm*sin + ym*cos + y1;
+        xm = x;
+
+        x = xn*cos - yn*sin + x1;
+        yn = xn*sin + yn*cos + y1;
+        xn = x;
+
+        int[] xpoints = {x2, (int) xm, (int) xn};
+        int[] ypoints = {y2, (int) ym, (int) yn};
+
+        g.drawLine(x1, y1, x2, y2);
+        g.fillPolygon(xpoints, ypoints, 3);
     }
 }
