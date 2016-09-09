@@ -16,7 +16,7 @@
     </AnchorPane>
     <ScrollPane fx:id="mToolPane" layoutX="0.0" prefHeight="703.0" prefWidth="266.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="25.0">
       <content>
-        <GridPane alignment="TOP_LEFT" gridLinesVisible="false" hgap="5.0" prefHeight="639.0" prefWidth="266.0">
+        <GridPane alignment="TOP_LEFT" gridLinesVisible="false" hgap="5.0" prefHeight="680.0001220703125" prefWidth="266.0">
           <children>
             <Button fx:id="mGenerateButton" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2" GridPane.rowIndex="0" />
             <Button fx:id="mPersistenceDefaultButton" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="3" />
@@ -48,10 +48,12 @@
             <Button fx:id="mHillGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="7" />
             <Button fx:id="mMountainGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="8" />
             <Button fx:id="mCityGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="10" />
-            <Button fx:id="mSaveImageButton" mnemonicParsing="false" text="Save Image" GridPane.columnIndex="1" GridPane.rowIndex="15" />
-            <CheckBox fx:id="mPoliticalMapCheckBox" disable="true" mnemonicParsing="false" text="Political Map" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="14" />
-            <CheckBox fx:id="mTerritoryGenCheckBox" mnemonicParsing="false" text="Country Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="13" />
+            <Button fx:id="mSaveImageButton" mnemonicParsing="false" text="Save Image" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+            <CheckBox fx:id="mPoliticalMapCheckBox" disable="true" mnemonicParsing="false" text="Political Map" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="15" />
+            <CheckBox fx:id="mTerritoryGenCheckBox" mnemonicParsing="false" text="Country Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="14" />
             <CheckBox fx:id="mContinentGenCheckBox" mnemonicParsing="false" selected="true" text="Continent Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="12" />
+            <CheckBox fx:id="mBiomeGenCheckBox" mnemonicParsing="false" text="Biome Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="13" />
+            <CheckBox fx:id="mGridCheckBox" mnemonicParsing="false" text="Gridlines" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="16" />
           </children>
           <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="91.0" minWidth="7.0" prefWidth="63.0" />
@@ -62,6 +64,8 @@
             <Insets left="5.0" right="5.0" />
           </padding>
           <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />

@@ -30,7 +30,8 @@ public class ImageManagerTester {
                 false,
                 false,
                 true,
-                false);
+                false,
+                true);
 
         HeatmapImageManager heatmapImageManager = new HeatmapImageManager(map);
         heatmapImageManager.generateImage();

@@ -22,12 +22,15 @@ public class ImageManager {
 
     protected BufferedImage mImage;
 
+    protected boolean mGridEnabled;
+
     protected final int OVAL_WIDTH = 5;
 
     protected final int OVAL_HEIGHT = 5;
 
-    public ImageManager(PerlinMap map) {
+    public ImageManager(PerlinMap map, boolean gridEnabled) {
         mMap = map;
+        mGridEnabled = gridEnabled;
         mImage = new BufferedImage(mMap.getWidth(), mMap.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
     }
     
@@ -41,11 +44,27 @@ public class ImageManager {
     
     protected void initializeMap() {
         mMap.generateMap();
-        //colorTerrain();
-        colorBiomes();
+
+        colorMap();
     }
 
-    public void colorBiomes() {
+    public void colorMap() {
+        FantasyImageManager fantasyImageManager = new FantasyImageManager(mMap);
+        fantasyImageManager.generate();
+        mImage = fantasyImageManager.getImage();
+
+        /*if (mMap.isBiomesEnabled()) {
+            colorBiomes();
+        } else {
+            colorTerrain();
+        }*/
+
+        if (mGridEnabled) {
+            colorGrid();
+        }
+    }
+
+    private void colorBiomes() {
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 Terrain terrain = mMap.getTerrain(x, y);
@@ -67,7 +86,7 @@ public class ImageManager {
             shadeMapWithoutSlopeDiff();
         }
 
-        drawWindCurrents();
+        //drawWindCurrents();
 
         if (mMap.isCitiesEnabled()) {
             colorCities();
@@ -78,7 +97,7 @@ public class ImageManager {
         }
     }
 
-    public void colorTerrain() {
+    protected void colorTerrain() {
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 mImage.setRGB(x, y, getColorByTerrain(mMap.getTerrain(x, y)).getRGB());
@@ -97,6 +116,19 @@ public class ImageManager {
 
         if (mMap.isCitiesEnabled() && mMap.isNamesEnabled()) {
             colorNames();
+        }
+    }
+
+    private void colorGrid() {
+        for (int y = 0; y < mMap.getHeight(); y += 100) {
+            for (int x = 0; x < mMap.getWidth(); x++) {
+                mImage.setRGB(x, y, mixColorsWithAlpha(new Color(mImage.getRGB(x, y)), Color.cyan, 25).getRGB());
+            }
+        }
+        for (int y = 0; y < mMap.getHeight(); y++) {
+            for (int x = 0; x < mMap.getWidth(); x += 100) {
+                mImage.setRGB(x, y, mixColorsWithAlpha(new Color(mImage.getRGB(x, y)), Color.cyan, 25).getRGB());
+            }
         }
     }
 
@@ -180,6 +212,10 @@ public class ImageManager {
         }
         if (mMap.isNamesEnabled()) {
             colorNames();
+        }
+
+        if (mGridEnabled) {
+            colorGrid();
         }
     }
 

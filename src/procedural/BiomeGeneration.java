@@ -1,6 +1,6 @@
 package procedural;
 
-import map.Map;
+import map.PerlinMap;
 import metrics.Metric;
 import metrics.MetricKey;
 import model.BiomeType;
@@ -9,16 +9,16 @@ import model.TerrainType;
 
 public class BiomeGeneration {
 
-    private Map mMap;
+    private PerlinMap mMap;
 
     private TemperatureGeneration mTemperatureGeneration;
 
-    private HumidityGeneration mHumidityGeneration;
+    private HumidityGenerationV2 mHumidityGeneration;
 
-    public BiomeGeneration(Map map) {
+    public BiomeGeneration(PerlinMap map) {
         mMap = map;
         mTemperatureGeneration = new TemperatureGeneration(mMap);
-        mHumidityGeneration = new HumidityGeneration(mMap);
+        mHumidityGeneration = new HumidityGenerationV2(mMap);
     }
 
     public void generate() {

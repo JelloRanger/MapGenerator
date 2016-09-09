@@ -9,10 +9,14 @@
 
 <AnchorPane fx:id="mRootAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0000999999975" prefWidth="1280.000199999995" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="controller.UiController">
   <children>
-    <AnchorPane fx:id="mCanvasAnchor" layoutX="264.0" layoutY="23.0" minHeight="376.0" prefHeight="696.9999000000025" prefWidth="1016.0" />
+    <AnchorPane fx:id="mCanvasAnchor" layoutX="264.0" layoutY="23.0" minHeight="376.0" prefHeight="696.9999000000025" prefWidth="1016.0">
+      <children>
+        <ProgressIndicator fx:id="mLoadingCircle" blendMode="SRC_OVER" cache="true" cacheHint="DEFAULT" disable="false" focusTraversable="false" layoutX="458.0" layoutY="299.0" mouseTransparent="false" pickOnBounds="false" prefHeight="100.0" prefWidth="100.0" progress="-0.7" visible="false" />
+      </children>
+    </AnchorPane>
     <ScrollPane fx:id="mToolPane" layoutX="0.0" prefHeight="703.0" prefWidth="266.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="25.0">
       <content>
-        <GridPane alignment="TOP_LEFT" gridLinesVisible="false" hgap="5.0" prefHeight="530.0" prefWidth="266.0">
+        <GridPane alignment="TOP_LEFT" gridLinesVisible="false" hgap="5.0" prefHeight="680.0001220703125" prefWidth="266.0">
           <children>
             <Button fx:id="mGenerateButton" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2" GridPane.rowIndex="0" />
             <Button fx:id="mPersistenceDefaultButton" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="3" />
@@ -34,19 +38,22 @@
             <TextField fx:id="mLandGenTextField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <TextField fx:id="mHillGenTextField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
             <TextField fx:id="mMountainGenTextField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-            <TextField fx:id="mRiverGenTextField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
             <CheckBox fx:id="mHillGenCheckBox" mnemonicParsing="false" selected="true" text="HillGen" GridPane.columnIndex="0" GridPane.rowIndex="7" />
             <CheckBox fx:id="mMountainGenCheckBox" mnemonicParsing="false" selected="true" text="MountainGen" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-            <CheckBox fx:id="mRiverGenCheckBox" mnemonicParsing="false" selected="true" text="RiverGen" GridPane.columnIndex="0" GridPane.rowIndex="9" />
-            <CheckBox fx:id="mCityGenCheckBox" mnemonicParsing="false" selected="true" text="CityGen" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+            <CheckBox fx:id="mRiverGenCheckBox" mnemonicParsing="false" selected="true" text="River Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="9" />
+            <CheckBox fx:id="mCityGenCheckBox" mnemonicParsing="false" selected="true" text="Cities" GridPane.columnIndex="0" GridPane.rowIndex="10" />
             <CheckBox fx:id="mNameGenCheckBox" mnemonicParsing="false" selected="true" text="Name Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="11" />
             <TextField fx:id="mCityGenTextField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="10" />
             <Button fx:id="mLandGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="6" />
             <Button fx:id="mHillGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="7" />
             <Button fx:id="mMountainGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="8" />
-            <Button fx:id="mRiverGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="9" />
             <Button fx:id="mCityGenDefaultButton" mnemonicParsing="false" text="Default" GridPane.columnIndex="2" GridPane.rowIndex="10" />
-            <Button fx:id="mSaveImageButton" mnemonicParsing="false" text="Save Image" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+            <Button fx:id="mSaveImageButton" mnemonicParsing="false" text="Save Image" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+            <CheckBox fx:id="mPoliticalMapCheckBox" disable="true" mnemonicParsing="false" text="Political Map" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="15" />
+            <CheckBox fx:id="mTerritoryGenCheckBox" mnemonicParsing="false" text="Country Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="14" />
+            <CheckBox fx:id="mContinentGenCheckBox" mnemonicParsing="false" selected="true" text="Continent Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="12" />
+            <CheckBox fx:id="mBiomeGenCheckBox" mnemonicParsing="false" text="Biome Generation" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="13" />
+            <CheckBox fx:id="mGridCheckBox" mnemonicParsing="false" text="Gridlines" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="16" />
           </children>
           <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="91.0" minWidth="7.0" prefWidth="63.0" />
@@ -57,6 +64,11 @@
             <Insets left="5.0" right="5.0" />
           </padding>
           <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />

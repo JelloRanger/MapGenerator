@@ -121,6 +121,12 @@ public class UiController {
     private CheckBox mPoliticalMapCheckBox;
 
     @FXML
+    private CheckBox mBiomeGenCheckBox;
+
+    @FXML
+    private CheckBox mGridCheckBox;
+
+    @FXML
     private MenuItem mMenuClose;
 
     private Stage mStage;
@@ -149,7 +155,7 @@ public class UiController {
 
     private static final double FORESTGEN = 0.2;
 
-    private static final int CITYGEN = 50;
+    private static final int CITYGEN = 25;
 
     private static final double PERSISTENCE = 0.5;
 
@@ -249,8 +255,8 @@ public class UiController {
     private void handlePoliticalMapCheckBox(ActionEvent event) {
         if (mPoliticalMapCheckBox.isSelected()) {
             mImageManager.colorPoliticalMap();
-        } else {
-            mImageManager.colorTerrain();
+        } else  {
+            mImageManager.colorMap();
         }
 
         mImage = mImageManager.getImage();
@@ -426,13 +432,14 @@ public class UiController {
                     mCityGenCheckBox.isSelected(),
                     mNameGenCheckBox.isSelected(),
                     mContinentGenCheckBox.isSelected(),
-                    mTerritoryGenCheckBox.isSelected());
+                    mTerritoryGenCheckBox.isSelected(),
+                    mBiomeGenCheckBox.isSelected());
         }
 
         @Override
         protected ImageView call() {
             try {
-                mImageManager = new ImageManager(map);
+                mImageManager = new ImageManager(map, mGridCheckBox.isSelected());
                 mImageManager.generateImage();
                 mImage = mImageManager.getImage();
                 ImageView imageView = new ImageView();

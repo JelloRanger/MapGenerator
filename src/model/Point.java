@@ -16,6 +16,14 @@ public class Point {
 	public Point(double elevation) {
 		this.elevation = elevation;
 	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
 	
 	public void setElevation(double elevation) {
 		this.elevation = elevation;

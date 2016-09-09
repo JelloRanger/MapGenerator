@@ -10,7 +10,7 @@ public class HeatmapImageManager extends ImageManager {
     double min, max;
 
     public HeatmapImageManager(PerlinMap map) {
-        super(map);
+        super(map, false);
     }
 
     @Override

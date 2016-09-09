@@ -48,7 +48,8 @@ public class PerlinMap extends RandomMap {
                      boolean citiesEnabled,
                      boolean namesEnabled,
                      boolean continentsEnabled,
-                     boolean territoriesEnabled) {
+                     boolean territoriesEnabled,
+                     boolean biomesEnabled) {
         super(width, height, seed, seedForest, landGen, waterGen, mountainGen, hillGen, beachGen, forestGen, cityGen);
         mPersistence = persistence;
         mOctaves = octaves;
@@ -60,6 +61,7 @@ public class PerlinMap extends RandomMap {
         mNamesEnabled = namesEnabled;
         mContinentsEnabled = continentsEnabled;
         mTerritoriesEnabled = territoriesEnabled;
+        mBiomesEnabled = biomesEnabled;
     }
 
     @Override
@@ -97,7 +99,9 @@ public class PerlinMap extends RandomMap {
             generateTerritories();
         }
 
-        generateBiomes();
+        if (mBiomesEnabled) {
+            generateBiomes();
+        }
     }
 
     @Override

@@ -46,6 +46,8 @@ public abstract class Map {
 
 	protected boolean mTerritoriesEnabled = true;
 
+	protected boolean mBiomesEnabled = true;
+
 	public abstract void generateMap();
 	
 	public int getWidth() {
@@ -130,6 +132,10 @@ public abstract class Map {
 
 	public boolean isTerritoriesEnabled() {
 		return mTerritoriesEnabled;
+	}
+
+	public boolean isBiomesEnabled() {
+		return mBiomesEnabled;
 	}
 
 	public abstract Terrain getTerrain(int x, int y);

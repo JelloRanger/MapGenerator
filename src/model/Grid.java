@@ -1,7 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Grid {
 
@@ -66,6 +68,24 @@ public class Grid {
 		}
 		
 		return adjacentPoints;
+	}
+
+	public Set<TerrainType> getAdjacentTerrainTypes(Terrain terrain, int degrees) {
+		Set<TerrainType> adjacentTerrain = new HashSet<>();
+		int x = terrain.getX();
+		int y = terrain.getY();
+
+		for (int dy = degrees * -1; dy <= degrees; dy++) {
+			for (int dx = degrees * -1; dx <= degrees; dx++) {
+				if ((dx != 0 || dy != 0) &&
+						x + dx >= 0 && x + dx < width &&
+						y + dy >= 0 && y + dy < height) {
+					adjacentTerrain.add(((Terrain) grid.get(y + dy).get(x + dx)).getTerrainType());
+				}
+			}
+		}
+
+		return adjacentTerrain;
 	}
 
 	public List<Terrain> getAdjacentTerrain(Terrain terrain, int degrees) {

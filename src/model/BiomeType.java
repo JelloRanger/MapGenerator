@@ -54,9 +54,9 @@ public enum BiomeType {
                 return SUBTROPICALDESERT;
             }
         } else if (temperature > 0.25) {
-            if (humidity > 0.25) {
+            if (humidity > 0.5) {
                 return TEMPERATERAINFOREST;
-            } else if (humidity > 0.065) {
+            } else if (humidity > 0.25) {
                 return SHRUBLAND;
             } else {
                 return COLDDESERT;
