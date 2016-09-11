@@ -7,6 +7,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
+<fx:deploy width="${javafx.run.width}" height="${javafx.run.height}"
+           nativeBundles="all"
+           outdir="${basedir}/${dist.dir}" outfile="${application.title}">
+    <fx:application name="${application.title}" mainClass="${javafx.main.class}"/>
+    <fx:resources>
+        <fx:fileset dir="${basedir}/${dist.dir}" includes="*.jar"/>
+    </fx:resources>
+    <fx:info title="${application.title}" vendor="${application.vendor}"/>
+</fx:deploy>
+
 <AnchorPane fx:id="mRootAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0000999999975" prefWidth="1280.000199999995" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="controller.UiController">
   <children>
     <AnchorPane fx:id="mCanvasAnchor" layoutX="264.0" layoutY="23.0" minHeight="376.0" prefHeight="696.9999000000025" prefWidth="1016.0">

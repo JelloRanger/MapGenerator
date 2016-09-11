@@ -48,7 +48,7 @@ public class TerritoryGeneration {
             List<Terrain> adjacentTerrains = mMap.getNoise().getGrid().getAdjacentTerrain(terrain, 1);
             for (Terrain adjacentTerrain : adjacentTerrains) {
                 if (adjacentTerrain.getElevation() > mMap.getLandGen() - 0.1 &&
-                        adjacentTerrain.getTerritory() == -1 || terrain.getElevation() > adjacentTerrain.getElevation()) {
+                        adjacentTerrain.getTerritory() == -1) {
 
                     adjacentTerrain.setTerritory(terrain.getTerritory());
                     if (Math.random() > 0.2)

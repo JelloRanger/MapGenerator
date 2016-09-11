@@ -50,10 +50,14 @@ public class FantasyImageManager {
         }
         colorCities();
         colorNames();
-         Metric.record(MetricKey.FANTASYCOLORMAP);
+        Metric.record(MetricKey.FANTASYCOLORMAP);
     }
 
     private void colorCities() {
+        if (!mMap.isCitiesEnabled()) {
+            return;
+        }
+
         for (int y = 0; y < mMap.getHeight(); y++) {
             for (int x = 0; x < mMap.getWidth(); x++) {
                 Terrain terrain = mMap.getTerrain(x, y);
@@ -67,6 +71,10 @@ public class FantasyImageManager {
     }
 
     private void colorNames() {
+        if (!mMap.isNamesEnabled()) {
+            return;
+        }
+
         Graphics graphics = mImage.getGraphics();
         graphics.setFont(new Font("Mercury", Font.BOLD, 14)); //Papyrus, Plantin
         for (int y = 0; y < mMap.getHeight(); y++) {

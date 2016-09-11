@@ -1,15 +1,12 @@
 package test;
 
-import image.HeatmapImageManager;
-import map.PerlinMap;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageManagerTester {
 
-    public static void main(String[] arg) {
+    /*public static void main(String[] arg) {
         PerlinMap map = new PerlinMap(1000,
                 1000,
                 Math.random(),
@@ -36,7 +33,7 @@ public class ImageManagerTester {
         HeatmapImageManager heatmapImageManager = new HeatmapImageManager(map);
         heatmapImageManager.generateImage();
         createFrame(heatmapImageManager.getImage());
-    }
+    }*/
 
     public static void createFrame(BufferedImage image) {
         JFrame frame = new JFrame();

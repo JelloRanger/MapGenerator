@@ -49,15 +49,15 @@ public class ImageManager {
     }
 
     public void colorMap() {
-        FantasyImageManager fantasyImageManager = new FantasyImageManager(mMap);
+        /*FantasyImageManager fantasyImageManager = new FantasyImageManager(mMap);
         fantasyImageManager.generate();
-        mImage = fantasyImageManager.getImage();
+        mImage = fantasyImageManager.getImage();*/
 
-        /*if (mMap.isBiomesEnabled()) {
+        if (mMap.isBiomesEnabled()) {
             colorBiomes();
         } else {
             colorTerrain();
-        }*/
+        }
 
         if (mGridEnabled) {
             colorGrid();

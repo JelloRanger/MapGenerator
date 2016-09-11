@@ -1,5 +1,6 @@
 package controller;
 
+import image.FantasyImageManager;
 import image.ImageManager;
 import image.ZoomManager;
 import javafx.application.Platform;
@@ -129,11 +130,21 @@ public class UiController {
     @FXML
     private MenuItem mMenuClose;
 
+    @FXML
+    private CheckMenuItem mMenuTerrain;
+
+    @FXML
+    private CheckMenuItem mMenuFantasy;
+
     private Stage mStage;
 
-    private BufferedImage mImage;
+    private BufferedImage mTerrainImage;
+
+    private BufferedImage mFantasyImage;
 
     private ImageManager mImageManager;
+
+    private FantasyImageManager mFantasyImageManager;
 
     //private List<ImageView> mMapImageCache;
 
@@ -189,10 +200,16 @@ public class UiController {
 
         // CheckBox listeners
         mPoliticalMapCheckBox.setOnAction(this::handlePoliticalMapCheckBox);
+
+        // Menu items
+        mMenuTerrain.setSelected(true);
+        mMenuFantasy.setSelected(false);
+        mMenuTerrain.setOnAction(this::handleMenuTerrain);
+        mMenuFantasy.setOnAction(this::handleMenuFantasy);
     }
 
     private void setZoom() {
-        ZoomManager zoomManager = new ZoomManager(mImage, mCanvasAnchor);
+        ZoomManager zoomManager = new ZoomManager(mMenuTerrain.isSelected() ? mTerrainImage : mFantasyImage, mCanvasAnchor);
         ImageView imageView = zoomManager.startZoom();
         imageView.setId("mapImage");
         mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
@@ -259,16 +276,55 @@ public class UiController {
             mImageManager.colorMap();
         }
 
-        mImage = mImageManager.getImage();
+        mTerrainImage = mImageManager.getImage();
         ImageView imageView = new ImageView();
-        imageView.setImage(SwingFXUtils.toFXImage(mImage, null));
+        imageView.setImage(SwingFXUtils.toFXImage(mTerrainImage, null));
         imageView.setId("mapImage");
         mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
         mCanvasAnchor.getChildren().add(imageView);
         setZoom();
     }
 
+    // Menu item listeners
+    private void handleMenuTerrain(ActionEvent event) {
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+        if (mMenuTerrain.isSelected()) {
+            mMenuFantasy.setSelected(false);
+            ImageView imageView = new ImageView();
+            imageView.setImage(SwingFXUtils.toFXImage(mTerrainImage, null));
+            imageView.setId("mapImage");
+            mCanvasAnchor.getChildren().add(imageView);
+        } else {
+            mMenuFantasy.setSelected(true);
+            ImageView imageView = new ImageView();
+            imageView.setImage(SwingFXUtils.toFXImage(mFantasyImage, null));
+            imageView.setId("mapImage");
+            mCanvasAnchor.getChildren().add(imageView);
+        }
+        setZoom();
+    }
+
+    private void handleMenuFantasy(ActionEvent event) {
+        mCanvasAnchor.getChildren().remove(mCanvasAnchor.lookup("#mapImage"));
+        if (mMenuFantasy.isSelected()) {
+            mMenuTerrain.setSelected(false);
+            ImageView imageView = new ImageView();
+            imageView.setImage(SwingFXUtils.toFXImage(mFantasyImage, null));
+            imageView.setId("mapImage");
+            mCanvasAnchor.getChildren().add(imageView);
+        } else {
+            mMenuTerrain.setSelected(true);
+            ImageView imageView = new ImageView();
+            imageView.setImage(SwingFXUtils.toFXImage(mTerrainImage, null));
+            imageView.setId("mapImage");
+            mCanvasAnchor.getChildren().add(imageView);
+        }
+        setZoom();
+    }
+
     private void handleSaveImageButtonAction(ActionEvent event) {
+        BufferedImage saveImage = mMenuTerrain.isSelected() ? mTerrainImage : mFantasyImage;
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(mSaveImageButton.getText());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home"), "Pictures"));
@@ -277,9 +333,9 @@ public class UiController {
         File file = fileChooser.showSaveDialog(mStage);
         if (file != null) {
             try {
-                WritableImage writableImage = new WritableImage(mImage.getWidth(),
-                        mImage.getHeight());
-                SwingFXUtils.toFXImage(mImage, writableImage);
+                WritableImage writableImage = new WritableImage(saveImage.getWidth(),
+                        saveImage.getHeight());
+                SwingFXUtils.toFXImage(saveImage, writableImage);
                 ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
             } catch (IOException ioe) {
                 Logger.getLogger(TAG).log(Level.SEVERE, null, ioe);
@@ -440,10 +496,13 @@ public class UiController {
         protected ImageView call() {
             try {
                 mImageManager = new ImageManager(map, mGridCheckBox.isSelected());
+                mFantasyImageManager = new FantasyImageManager(map);
                 mImageManager.generateImage();
-                mImage = mImageManager.getImage();
+                mFantasyImageManager.generate();
+                mTerrainImage = mImageManager.getImage();
+                mFantasyImage = mFantasyImageManager.getImage();
                 ImageView imageView = new ImageView();
-                imageView.setImage(SwingFXUtils.toFXImage(mImage, null));
+                imageView.setImage(SwingFXUtils.toFXImage(mTerrainImage, null));
                 imageView.setId("mapImage");
                 return imageView;
             } catch (Exception e) {
